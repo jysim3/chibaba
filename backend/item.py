@@ -22,14 +22,16 @@ class Item:
         self.name = name
         self.itemId = itemid
         self.price = price
-        self.status = 0
+        self.status = status
         self.description = description
         self.photo = photo 
         self.userID = userID
         self.buyerID = None
         if (foodFlag == False):
-            self.createSQL()
-            self.injectItem()
+            result0 = self.createSQL()
+            result1 = self.injectItem()
+            if (result0 is None or result1 is None):
+                return None
 
     def getName(self):
         return self.name
@@ -125,7 +127,7 @@ class Item:
             conn = sqlite3.connect("chibaba.db")
         except Error as e:
             print(e)
-            return
+            return False
     
         sql_create_statement = """ CREATE TABLE IF NOT EXISTS items (
                                         itemName text NOT NULL,
@@ -144,9 +146,10 @@ class Item:
                 c.execute(sql_create_statement)
             except Error as e:
                 print(e)
+                return False
         else:
             print("CRITICAL FAILURE")
-        
+            return False
         conn.close()
 
     def injectItem(self):
@@ -185,13 +188,20 @@ class Item:
         
         with conn:
             cur = conn.cursor()
-            cur.execute("SELECT * FROM items WHERE id=?", (itemID))
+            cur.execute("SELECT * FROM items WHERE id=?", (itemID, ))
             return cur.fetchone()
         
         return None
 
+    @staticmethod
+    def addItems(name, itemID, price, status, description, photo, userID):
+        item = Item(name, itemID, price, status, description, None, userID)
+        if (item is None):
+            return False
+            
 
+
+'''
 if __name__ == '__main__':
     #memes = Item("Memes", 123, 500, 0, "The end of the memes", None, 46833883)
-
-    #memes2 = Item("asdf", 440, 100, 0, None, None, 46833883)
+'''
