@@ -24,12 +24,7 @@ def create_db(db_file):
         print("Error on Sql", e)
 
 class User:
-    def __init__(self, userID,userName, password):
-        self.userID = userID
-        self.userName = userName
-        self.password = password
-
-    def createUser(self):
+    def createUser(self, userID,userName, password):
         try:
             conn = sqlite3.connect('chibaba.db')
         except Error as e:
@@ -50,7 +45,7 @@ class User:
 
         cur = conn.cursor()
         
-        cur.execute(f"DELETE FROM USER WHERE userID == self.userID")
+        cur.execute("DELETE FROM USER WHERE userID == self.userID")
         conn.commit()
         print("Deleted Successfully")
 
@@ -61,7 +56,7 @@ class User:
             print(e)
 
         cur = conn.cursor()
-        cur.execute(f"UPDATE USER SET password = self.password WHERE userID = self.userID;")
+        cur.execute("UPDATE USER SET password = self.password WHERE userID = self.userID")
         conn.commit()
         print("Updated Successfully")
 
@@ -74,6 +69,7 @@ class User:
         cur = conn.cursor()
         cur.execute(f"SELETE * FROM USER")
         conn.commit()
+        return cur.fatchall()
 
     def showItem_user(self, userID):
         try:
@@ -85,10 +81,10 @@ class User:
         cur.execute("SELECT * from item where userID = self.userID")
         conn.commit()
 
+        return cur.fatchall()
+
 
 if __name__ == '__main__':
     create_db('chibaba.db')
-    a = User('046833333','abc', 123)
-    a.createUser()
-
-
+    a = User()
+    a.deleteUser('46833333')
