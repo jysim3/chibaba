@@ -4,6 +4,7 @@ import sqlite3
 from sqlite3 import Error
 import json 
 import datetime,re
+from item import Item
 
 def create_db(db_file):
     try:
@@ -59,6 +60,24 @@ class User:
         conn.commit()
         print("Updated Successfully")
 
+    @staticmethod
+    def soldItem(self, itemid, newUserID):
+        result = Item.setBuyer(itemid, newUserID)
+        if (result == False):
+            return False
+        return True
+
+    @staticmethod
+    def create_connection():
+        conn = None
+        try:
+            conn = sqlite3.connect("chibaba.db")
+            return conn
+        except Error as e:
+            print(e)
+
+        return None
+
     def showUser(self,userID):
         try:
             conn = sqlite3.connect('chibaba.db')
@@ -68,7 +87,7 @@ class User:
         cur = conn.cursor()
         cur.execute(f"SELETE * FROM USER")
         conn.commit()
-        return cur.fatchall()
+        return cur.fetchall()
 
     def showItem_user(self, userID):
         try:
