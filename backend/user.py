@@ -121,15 +121,26 @@ class User:
         conn = User.create_connection()
         if (conn is None):
             return None
+
+        with conn:
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM items WHERE buyerID=?", (userID, ))
+            result = [x for x in cur.fetchall()]
+
+        return result, cur.description
+
+    @staticmethod
+    def sellingHistory(userID):
+        conn = User.create_connection()
+        if (conn is None):
+            return None
         
         with conn:
             cur = conn.cursor()
             cur.execute("SELECT * FROM items WHERE id=?", (userID, ))
-            conn.close()
-            return cur.fetchall()
+            result = [x for x in cur.fetchall()]
         
-        conn.close()
-        return None
+        return result, cur.description
 
 if __name__ == '__main__':
     create_db('chibaba.db')

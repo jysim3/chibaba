@@ -66,7 +66,33 @@ def sellItem():
 def getPurchaseHistory():
     inputJSON = request.get_json()
     userID = inputJSON['userID']
-    history = User.purchaseHistory(userID)
+    result, title = User.purchaseHistory(userID)
+    items = []
+    for row in result:
+        item = dict()
+        print(row)
+        for idx, column in enumerate(row):
+            item[title[idx][0]] = row[idx]
+
+        items.append(item)
+
+    return jsonify(items)
+
+@app.route("/sellingHistory", methods=['POST'])
+def getSellingHistory():
+    inputJSON = request.get_json()
+    userID = inputJSON['userID']
+    result, title = User.sellingHistory(userID)
+    items = []
+    for row in result:
+        item = dict()
+        print(row)
+        for idx, column in enumerate(row):
+            item[title[idx][0]] = row[idx]
+
+        items.append(item)
+
+    return jsonify(items)
 
 if __name__ == '__main__':
     app.run(debug=True)

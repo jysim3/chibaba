@@ -62,6 +62,7 @@ class Item:
 
             result = [x for x in cur.fetchall()]
             return result, cur.description
+
     @staticmethod
     def setName(itemID, name):
         conn = Item.create_connection()
@@ -213,5 +214,5 @@ class Item:
 
 
 if __name__ == '__main__':
-    memes = Item("Memes", 123, 500, 0, "The end of the memes", None, 5161616)
+    #memes = Item("Memes", 123, 500, 0, "The end of the memes", None, 5161616)
     memes2 = Item("memes, the second coming", 440, 450, 0, "The resurrection", None, 5161616)
