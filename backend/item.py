@@ -51,6 +51,17 @@ class Item:
     def getPhoto(self):
         return self.photo
 
+    @staticmethod 
+    def getAllItems():
+        conn = Item.create_connection()
+        with conn:
+            sql = "SELECT * from items"
+            cur = conn.cursor()
+            cur.execute(sql)
+            conn.commit()
+
+            result = [x for x in cur.fetchall()]
+            return result, cur.description
     @staticmethod
     def setName(itemID, name):
         conn = Item.create_connection()
