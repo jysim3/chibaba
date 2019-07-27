@@ -220,7 +220,7 @@ class Item:
 
     @staticmethod
     def searchString(inputString):
-        sql0 = """DROP TABLE test;"""
+        sql0 = """DROP TABLE IF EXISTS test;"""
         sql = """CREATE VIRTUAL TABLE test USING fts5(itemName, itemDescription, itemID);"""
         sql2 = """INSERT INTO TEST SELECT ITEMNAME, ITEMDESCRIPTION, ITEMID FROM ITEMS;"""
 
@@ -231,14 +231,14 @@ class Item:
         c.execute(sql)
         c.execute(sql2)
 
-        c.execute("SELECT ITEMID FROM TEST WHERE TEST MATCH inputString=?", (inputString, ))
+        c.execute("SELECT ITEMID FROM TEST WHERE TEST MATCH ?", (inputString, ))
 
         itemsIDs = []
         items = []
         itemsIDs = c.fetchall()
 
         for item in itemsIDs:
-            items.append(Item.getItem(item))
+            items.append(Item.getItem(item[0]))
 
         return items
 

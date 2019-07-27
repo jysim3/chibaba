@@ -128,21 +128,13 @@ def getSellingHistory():
 
     return jsonify(items)
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
 @app.route("/search", methods=['POST'])
 def search():
     inputJSON = request.get_json()
-    textString = inputJSON('input')
-    searchResult, title = Item.searchString(textString)
-    items = []
-    for row in searchResult:
-        item = dict()
-        print(row)
-        for idx, column in enumerate(row):
-            item[title[idx][0]] = row[idx]
+    textString = inputJSON['input']
+    searchResult = Item.searchString(textString)
 
-        items.append(item)
+    return jsonify(searchResult)   
 
-    return jsonify(items)   
+if __name__ == '__main__':
+    app.run(debug=True)
