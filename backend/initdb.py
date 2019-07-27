@@ -2,7 +2,7 @@ import sqlite3
 import random
 import datetime,re
 from sqlite3 import Error
-
+from item import Item
 conn = sqlite3.connect('chibaba.db')
 cur = conn.cursor()
 
@@ -30,12 +30,10 @@ def create_item():
                  ["item9", 9, 50, 0, "The end of the memes", None, 22222222],["item10", 10, 50, 0, "The end of the memes", None, 22222222],["item11", 11, 50, 0, "The end of the memes", None, 11111111],["item12", 12, 50, 0, "The end of the memes", None, 11111111]]
 
     for i in item_list:
-        item = []
-        for j in range(len(i)):
-            item.append(i[j])
-        cur.execute("INSERT INTO items(itemName, itemID, price, itemStatus, itemDescription, id, buyerID) VALUES (?, ?, ?, ?, ?, ?, ?)", item)
+        Item(i[0],i[1],i[2],i[3],i[4],i[5],i[6])
     conn.commit()
+
     print("Created Successfully!")
 
-# create_user()
+create_user()
 create_item()
