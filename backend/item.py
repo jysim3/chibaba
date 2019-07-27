@@ -14,6 +14,7 @@ class Item:
     description = None
     photo = None
     userID = None
+    buyerID = None
 
     #ItemID should not be set by the user, FIXME
     def __init__(self, name, itemid, price, status=None, description=None, photo=None, userID=None, foodFlag=False):
@@ -21,13 +22,16 @@ class Item:
         self.name = name
         self.itemId = itemid
         self.price = price
-        self.status = 0
+        self.status = status
         self.description = description
         self.photo = photo 
         self.userID = userID
+        self.buyerID = None
         if (foodFlag == False):
-            self.createSQL()
-            self.injectItem()
+            result0 = self.createSQL()
+            result1 = self.injectItem()
+            if (result0 is None or result1 is None):
+                return None
 
     def getName(self):
         return self.name
@@ -47,50 +51,63 @@ class Item:
     def getPhoto(self):
         return self.photo
 
-    def setName(self, name):
-        self.name = name
+    @staticmethod
+    def setName(itemID, name):
         conn = Item.create_connection()
         with conn:
-            task = (name, self.getID());
+            task = (name, itemID);
             sql = ''' UPDATE items
                         SET itemName = ?
                     WHERE itemID = ?'''
             cur = conn.cursor()
             cur.execute(sql, task)
 
-    def setPrice(self, price):
-        self.price = price
+    @staticmethod
+    def setPrice(itemID, price):
         conn = Item.create_connection()
         with conn:
-            task = (price, self.getID());
+            task = (price, itemID);
             sql = ''' UPDATE items
                         SET price = ?
                     WHERE itemID = ?'''
             cur = conn.cursor()
             cur.execute(sql, task)
 
-    def setStatus(self, status):
-        self.status = status
+    @staticmethod
+    def setStatus(itemID, status):
         conn = Item.create_connection()
         with conn:
-            task = (status, self.getID());
+            task = (status, itemID);
             sql = ''' UPDATE items
                         SET itemStatus = ?
                     WHERE itemID = ?'''
             cur = conn.cursor()
             cur.execute(sql, task)
 
-    def setDescription(self, description):
-        self.description = description
+    @staticmethod
+    def setDescription(itemID, description):
         conn = Item.create_connection()
         with conn:
-            task = (description, self.getID());
+            task = (description, itemID);
             sql = ''' UPDATE items
                         SET itemDescription = ?
                     WHERE itemID = ?'''
             cur = conn.cursor()
             cur.execute(sql, task)
-
+    
+    @staticmethod
+    def setBuyer(itemID, buyerID):
+        if Item.getItem(itemID) == None:
+            return False
+        conn = Item.create_connection()
+        with conn:
+            task = (buyerID, itemID);
+            sql = ''' UPDATE items
+                        SET buyerID = ?
+                    WHERE itemID = ?'''
+            cur = conn.cursor()
+            cur.execute(sql, task)
+            return True
     '''
     def setPhoto(self, photo):
         self.photo = photo
@@ -110,7 +127,7 @@ class Item:
             conn = sqlite3.connect("chibaba.db")
         except Error as e:
             print(e)
-            return
+            return False
     
         sql_create_statement = """ CREATE TABLE IF NOT EXISTS items (
                                         itemName text NOT NULL,
@@ -118,6 +135,7 @@ class Item:
                                         price integer NOT NULL,
                                         itemStatus text,
                                         itemDescription text,
+                                        buyerID integer,
                                         id integer NOT NULL,
                                         FOREIGN KEY (id) REFERENCES USER (userID)
                                     ); """
@@ -128,9 +146,10 @@ class Item:
                 c.execute(sql_create_statement)
             except Error as e:
                 print(e)
+                return False
         else:
             print("CRITICAL FAILURE")
-        
+            return False
         conn.close()
 
     def injectItem(self):
@@ -142,9 +161,9 @@ class Item:
             return
 
         with conn:
-            item = (self.name, self.itemId, self.price, self.status, self.description, self.userID);
-            sql = ''' INSERT INTO items(itemName, itemID, price, itemStatus, itemDescription, id)
-                        VALUES(?, ?, ?, ?, ?, ?) '''
+            item = (self.name, self.itemId, self.price, self.status, self.description, self.userID, None);
+            sql = ''' INSERT INTO items(itemName, itemID, price, itemStatus, itemDescription, id, buyerID)
+                        VALUES(?, ?, ?, ?, ?, ?, ?) '''
             curs = conn.cursor()
             curs.execute(sql, item)
         
@@ -161,8 +180,28 @@ class Item:
 
         return None
 
+    @staticmethod
+    def getItem(itemID):
+        conn = Item.create_connection()
+        if (conn == None):
+            return None
+        
+        with conn:
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM items WHERE id=?", (itemID, ))
+            return cur.fetchone()
+        
+        return None
 
+    @staticmethod
+    def addItems(name, itemID, price, status, description, photo, userID):
+        item = Item(name, itemID, price, status, description, None, userID)
+        if (item is None):
+            return False
+            
+
+
+'''
 if __name__ == '__main__':
-    memes = Item("Memes", 123, 500, 0, "The end of the memes", None, 46833883)
-
-    memes2 = Item("asdf", 440, 100, 0, None, None, 46833883)
+    #memes = Item("Memes", 123, 500, 0, "The end of the memes", None, 46833883)
+'''

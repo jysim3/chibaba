@@ -4,6 +4,7 @@ import sqlite3
 from sqlite3 import Error
 import json 
 import datetime,re
+from item import Item
 
 def create_db(db_file):
     try:
@@ -50,7 +51,22 @@ class User:
         conn.commit()
         print("Deleted Successfully")
 
-    def updatePassword(self,userID, password):
+    @staticmethod
+    def login(username, password):
+        try:
+            conn = sqlite3.connect('chibaba.db')
+        except Error as e:
+            print(e)
+
+        cur = conn.cursor()
+        cur.execute(f"SELECT * FROM USER WHERE password = '{ password }' AND username = '{ username }'")
+        conn.commit()
+        if cur.fetchone():
+            return True
+        else:
+            return False
+        conn.close()
+    def updatePassword(userID, password):
         try:
             conn = sqlite3.connect('chibaba.db')
         except Error as e:
@@ -59,7 +75,25 @@ class User:
         cur = conn.cursor()
         cur.execute("UPDATE USER SET password = self.password WHERE userID == (?)", userID)
         conn.commit()
-        print("Updated Successfully")
+        return cur.fetchall()
+
+    @staticmethod
+    def soldItem(self, itemid, newUserID):
+        result = Item.setBuyer(itemid, newUserID)
+        if (result == False):
+            return False
+        return True
+
+    @staticmethod
+    def create_connection():
+        conn = None
+        try:
+            conn = sqlite3.connect("chibaba.db")
+            return conn
+        except Error as e:
+            print(e)
+
+        return None
 
     def showUser(self,userID):
         try:
@@ -70,7 +104,7 @@ class User:
         cur = conn.cursor()
         cur.execute("SELETE * FROM USER")
         conn.commit()
-        return cur.fatchall()
+        return cur.fetchall()
 
     def login(userID, password ):
         try:

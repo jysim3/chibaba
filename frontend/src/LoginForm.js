@@ -1,11 +1,31 @@
 import React from 'react';
 import { Button, Icon, Form, Input, Checkbox } from 'antd';
+import { useCookies } from 'react-cookie';
 class LoginForm extends React.Component {
     handleSubmit = e => {
+
       e.preventDefault();
       this.props.form.validateFields((err, values) => {
+          console.log("receive fields of ", values)
         if (!err) {
-          console.log('Received values of form: ', values);
+            fetch('http://localhost:5000/login', {
+                method: 'POST',
+                body: JSON.stringify(values),
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            })
+            .then(response => response.json())
+            .then(j => {
+                if (j.status === 200){
+                    document.cookie = "username=" + values["username"]
+                } else {
+                    document.cookie = "username=anon"
+                }
+            })
+            .catch(reason => console.log(reason));
         }
       });
     };
@@ -40,13 +60,13 @@ class LoginForm extends React.Component {
               valuePropName: 'checked',
               initialValue: true,
             })(<Checkbox>Remember me</Checkbox>)}
-            <a className="login-form-forgot" href="">
+            <a className="login-form-forgot" href="#hi">
               Forgot password
             </a>
             <Button type="primary" htmlType="submit" className="login-form-button">
               Log in
             </Button>
-            Or <a href="">register now!</a>
+            Or <a href="register">register now!</a>
           </Form.Item>
         </Form>
       );
