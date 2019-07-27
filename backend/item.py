@@ -180,7 +180,7 @@ class Item:
         with conn:
             item = (self.name, self.price, self.status, self.description, self.userID, None, self.photo);
             sql = ''' INSERT INTO items(itemName, price, itemStatus, itemDescription, id, buyerID, itemImage)
-                        VALUES(?, ?, ?, ?, ?, NULL, ?) '''
+                        VALUES(?, ?, ?, ?, ?, ?, ?) '''
             curs = conn.cursor()
             lastUID = curs.execute(sql, item).lastrowid
 
