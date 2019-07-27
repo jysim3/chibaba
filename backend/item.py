@@ -13,9 +13,10 @@ class Item:
     status = 0
     description = None
     photo = None
+    userID = None
 
     #ItemID should not be set by the user, FIXME
-    def __init__(self, name, itemid, price, status=None, description=None, photo=None, foodFlag=False):
+    def __init__(self, name, itemid, price, status=None, description=None, photo=None, userID=None, foodFlag=False):
         #print("Called parent's constructor")
         self.name = name
         self.itemId = itemid
@@ -23,9 +24,10 @@ class Item:
         self.status = 0
         self.description = description
         self.photo = photo 
+        self.userID = userID
         if (foodFlag == False):
             self.createSQL()
-            self.injectUser()
+            self.injectItem()
 
     def getName(self):
         return self.name
@@ -115,7 +117,9 @@ class Item:
                                         itemID integer PRIMARY KEY,
                                         price integer NOT NULL,
                                         itemStatus text,
-                                        itemDescription text
+                                        itemDescription text,
+                                        id integer NOT NULL,
+                                        FOREIGN KEY (id) REFERENCES USER (userID)
                                     ); """
 
         if conn is not None:
@@ -129,7 +133,7 @@ class Item:
         
         conn.close()
 
-    def injectUser(self):
+    def injectItem(self):
         conn = None
         try:
             conn = sqlite3.connect("chibaba.db")
@@ -138,9 +142,9 @@ class Item:
             return
 
         with conn:
-            item = (self.name, self.itemId, self.price, self.status, self.description);
-            sql = ''' INSERT INTO items(itemName, itemID, price, itemStatus, itemDescription)
-                        VALUES(?, ?, ?, ?, ?) '''
+            item = (self.name, self.itemId, self.price, self.status, self.description, self.userID);
+            sql = ''' INSERT INTO items(itemName, itemID, price, itemStatus, itemDescription, id)
+                        VALUES(?, ?, ?, ?, ?, ?) '''
             curs = conn.cursor()
             curs.execute(sql, item)
         
@@ -157,10 +161,8 @@ class Item:
 
         return None
 
-'''
-memes = Item("Memes", 123, 500, 0, "The end of the memes", None)
-memes.setName("mewrmwe")
-memes.setStatus(2)
-memes.setPrice(400)
-#print(memes.getName())
-'''
+
+if __name__ == '__main__':
+    memes = Item("Memes", 123, 500, 0, "The end of the memes", None, 46833883)
+
+    memes2 = Item("asdf", 440, 100, 0, None, None, 46833883)

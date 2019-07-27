@@ -2,7 +2,6 @@ import os
 import random
 import sqlite3
 from sqlite3 import Error
-# import requests
 import json 
 import datetime,re
 
@@ -13,9 +12,8 @@ def create_db(db_file):
                                         userID integer primary key,
                                         userName text,
                                         password text,
-                                        creation_time time
-                                        -- item text,
-                                        -- points integer
+                                        creation_time time,
+                                        item text references items(itemid)
                                     ); """
         cur = conn.cursor()
         cur.execute(create_table_user)
@@ -25,12 +23,7 @@ def create_db(db_file):
         print("Error on Sql", e)
 
 class User:
-    def __init__(self, userID,userName, password):
-        self.userID = userID
-        self.userName = userName
-        self.password = password
-
-    def createUser(self):
+    def createUser(self, userID,userName, password):
         try:
             conn = sqlite3.connect('chibaba.db')
         except Error as e:
@@ -38,8 +31,8 @@ class User:
 
         cur = conn.cursor()
 
-        self.creation_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        cur.execute("INSERT INTO USER VALUES (?,?,?,?)", (self.userID, self.userName, self.password, self.creation_time))
+        creation_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cur.execute("INSERT INTO USER VALUES (?,?,?,?,null)", (userID, userName, password, creation_time))
         conn.commit()
         print("Created Successfully!")
     
@@ -51,7 +44,7 @@ class User:
 
         cur = conn.cursor()
         
-        cur.execute(f"DELETE FROM USER WHERE userID == self.userID")
+        cur.execute(f"DELETE FROM USER WHERE userID == {userID}")
         conn.commit()
         print("Deleted Successfully")
 
@@ -62,7 +55,7 @@ class User:
             print(e)
 
         cur = conn.cursor()
-        cur.execute(f"UPDATE USER SET password = self.password WHERE userID = self.userID;")
+        cur.execute(f"UPDATE USER SET password = self.password WHERE userID = {userID}")
         conn.commit()
         print("Updated Successfully")
 
@@ -75,11 +68,25 @@ class User:
         cur = conn.cursor()
         cur.execute(f"SELETE * FROM USER")
         conn.commit()
+        return cur.fatchall()
+
+    def showItem_user(self, userID):
+        try:
+            conn = sqlite3.connect('chibaba.db')
+        except Error as e:
+            print(e)
+
+        cur = conn.cursor()
+        cur.execute(f"SELECT * from items where id = {userID}")
+        conn.commit()
+
+        return cur.fetchall()
 
 
 if __name__ == '__main__':
     create_db('chibaba.db')
-    a = User('046833333','abc', 123)
-    a.createUser()
+    a = User()
+    items = a.showItem_user(46833883)
 
-
+    for item in items:
+        print(item)

@@ -9,10 +9,10 @@ class Food(Item):
     expiryDate = None
     foodType = None
 
-    def __init__(self, name, itemid, price, status=None, description=None, photo=None, expiryDate=None, foodType=None):
+    def __init__(self, name, itemid, price, status=None, description=None, photo=None, userID=None, expiryDate=None, foodType=None):
         self.expiryDate = expiryDate
         self.foodType = foodType
-        super().__init__(name, itemid, price, status, description, photo, True)
+        super().__init__(name, itemid, price, status, description, photo, userID, expiryDate, True)
         self.createSQL()
         self.injectUser()
 
@@ -62,7 +62,9 @@ class Food(Item):
                                         itemStatus text,
                                         itemDescription text,
                                         foodType text NOT NULL,
-                                        expiryDate text NOT NULL
+                                        expiryDate text NOT NULL,
+                                        id integer NOT NULL,
+                                        FOREIGN KEY (id) REFERENCES USER (userID)
                                     ); """
 
         if conn is not None:
@@ -85,9 +87,9 @@ class Food(Item):
             return
 
         with conn:
-            item = (self.name, self.itemId, self.price, self.status, self.description, self.foodType, self.expiryDate);
-            sql = ''' INSERT INTO foods(itemName, itemID, price, itemStatus, itemDescription, foodType, expiryDate)
-                        VALUES(?, ?, ?, ?, ?, ?, ?) '''
+            item = (self.name, self.itemId, self.price, self.status, self.description, self.foodType, self.expiryDate, self.userID);
+            sql = ''' INSERT INTO foods(itemName, itemID, price, itemStatus, itemDescription, foodType, expiryDate, id)
+                        VALUES(?, ?, ?, ?, ?, ?, ?, ?) '''
             curs = conn.cursor()
             curs.execute(sql, item)
         
