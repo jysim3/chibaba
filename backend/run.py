@@ -1,3 +1,4 @@
+import sqlite3
 from flask import Flask, request, json, jsonify
 from user import User
 from item import Item
@@ -47,6 +48,18 @@ def login():
     username = inputJSON['username']
     password = inputJSON['password']
     if User.login(username,password):
+        return jsonify(status=200),200
+    else:
+        return jsonify(status=401),401
+
+@app.route("/register", methods=['POST']) 
+def register():
+    inputJSON = request.get_json()
+    print("input == ", inputJSON)
+    userid = inputJSON['userid']
+    username = inputJSON['username']
+    password = inputJSON['password']
+    if User.createUser(userid, username, password):
         return jsonify(status=200),200
     else:
         return jsonify(status=401),401
