@@ -58,22 +58,38 @@ def register():
     else:
         return jsonify(status=401),401
 
+@app.route("/getusrInfo", methods=['POST'])
+def getusrInfo():
+    inputJSON = request.get_json()
+    print("input == ", inputJSON)
+    userid = inputJSON['userid']
+    result,title = User.showUser(userid)
+    users = []
+    for row in result:
+        user = dict()
+        for idx, column in enumerate(row):
+            user[title[idx][0]] = row[idx]
+        users.append(user)
+        return jsonify(users),200
+    else:
+        return jsonify(status=401),401
+
+
 @app.route("/sellItem", methods=['POST'])
 def sellItem():
     inputJSON = request.get_json()
     #FIXME: CHange this later on, change to whatever the latest ID + 1
-    itemID = inputJSON['itemID']
     name = inputJSON['name']
     price = inputJSON['price']
     status = 1
     description = inputJSON['description']
     sellerID = inputJSON['userID']
 
-    itemToSell = Item.addItems(name, itemID, price, status, description, None, sellerID)
-    if (itemToSell == False):
+    itemToSell = Item.addItems(name, price, status, description, None, sellerID)
+    if (itemToSell is None):
         return jsonify(status=404)
-    
-    return jsonify(status=200)
+
+    return jsonify(status=200, itemID=itemToSell)
 
 @app.route("/purchaseHistory", methods=['POST'])
 def getPurchaseHistory():
@@ -109,4 +125,9 @@ def getSellingHistory():
     return jsonify(items)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
+
+@app.route("/search", methods=['POST'])
+def search():
+    inputJSON = request.get_json()
+    textString = inputJSON('input')

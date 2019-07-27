@@ -17,10 +17,9 @@ class Item:
     buyerID = None
 
     #ItemID should not be set by the user, FIXME
-    def __init__(self, name, itemid, price, status=None, description=None, photo=None, userID=None, foodFlag=False):
+    def __init__(self, name, price, status=None, description=None, photo=None, userID=None, foodFlag=False):
         #print("Called parent's constructor")
         self.name = name
-        self.itemId = itemid
         self.price = price
         self.status = status
         self.description = description
@@ -29,8 +28,8 @@ class Item:
         self.buyerID = None
         if (foodFlag == False):
             result0 = self.createSQL()
-            result1 = self.injectItem()
-            if (result0 is None or result1 is None):
+            lastUID = self.injectItem()
+            if (result0 is None or lastUID is None):
                 return None
 
     def getName(self):
@@ -143,7 +142,7 @@ class Item:
     
         sql_create_statement = """ CREATE TABLE IF NOT EXISTS items (
                                         itemName text NOT NULL,
-                                        itemID integer PRIMARY KEY,
+                                        itemID integer PRIMARY KEY AUTOINCREMENT,
                                         price integer NOT NULL,
                                         itemStatus text,
                                         itemDescription text,
@@ -172,13 +171,15 @@ class Item:
             print(e)
             return
 
+        lastUID = None
         with conn:
-            item = (self.name, self.itemId, self.price, self.status, self.description, self.userID, None);
-            sql = ''' INSERT INTO items(itemName, itemID, price, itemStatus, itemDescription, id, buyerID)
-                        VALUES(?, ?, ?, ?, ?, ?, ?) '''
+            item = (self.name, self.price, self.status, self.description, self.userID, None);
+            sql = ''' INSERT INTO items(itemName, price, itemStatus, itemDescription, id, buyerID)
+                        VALUES(?, ?, ?, ?, ?, ?) '''
             curs = conn.cursor()
-            curs.execute(sql, item)
-        
+            lastUID = curs.execute(sql, item).lastrowid
+
+        self.itemId = lastUID
         conn.close()
 
     @staticmethod
@@ -202,17 +203,17 @@ class Item:
             cur = conn.cursor()
             cur.execute("SELECT * FROM items WHERE itemID=?", (itemID, ))
             return cur.fetchone()
-        
+
         return None
 
     @staticmethod
-    def addItems(name, itemID, price, status, description, photo, userID):
-        item = Item(name, itemID, price, status, description, None, userID)
+    def addItems(name, price, status, description, photo, userID):
+        item = Item(name, price, status, description, None, userID)
         if (item is None):
-            return False
-            
-
+            return None
+        return item.getID()
 
 if __name__ == '__main__':
-    #memes = Item("Memes", 123, 500, 0, "The end of the memes", None, 5161616)
-    memes2 = Item("memes, the second coming", 440, 450, 0, "The resurrection", None, 5161616)
+    memes = Item("Memes", 500, 0, "The end of the memes", None, 5161616)
+    memes2 = Item("memes, the second coming", 450, 0, "The resurrection", None, 5161616)
+    memes3 = Item("BATTLESTAR GALACTICA", 5000, 0, "Battlestar is pretty lit", None, 5161616)

@@ -3,9 +3,11 @@ import random
 import datetime,re
 from sqlite3 import Error
 from item import Item
+from user import create_db
 conn = sqlite3.connect('chibaba.db')
 cur = conn.cursor()
 
+create_db('chibaba.db')
 
 user_list = []
 def create_user():
