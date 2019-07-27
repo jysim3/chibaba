@@ -2,7 +2,6 @@ import os
 import random
 import sqlite3
 from sqlite3 import Error
-# import requests
 import json 
 import datetime,re
 
@@ -13,8 +12,8 @@ def create_db(db_file):
                                         userID integer primary key,
                                         userName text,
                                         password text,
-                                        creation_time time
-                                        -- item text,
+                                        creation_time time,
+                                        item text references items(itemid)
                                         -- points integer
                                     ); """
         cur = conn.cursor()
@@ -74,6 +73,16 @@ class User:
 
         cur = conn.cursor()
         cur.execute(f"SELETE * FROM USER")
+        conn.commit()
+
+    def showItem_user(self, userID):
+        try:
+            conn = sqlite3.connect('chibaba.db')
+        except Error as e:
+            print(e)
+
+        cur = conn.cursor()
+        cur.execute("SELECT * from item where userID = self.userID")
         conn.commit()
 
 
