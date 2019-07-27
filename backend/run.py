@@ -1,8 +1,11 @@
 from flask import Flask, request, json, jsonify
 from user import User
 from item import Item
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
+
 
 @app.route("/purchaseItem", methods=['POST'])
 def purchaseItem():
@@ -19,6 +22,7 @@ def purchaseItem():
 @app.route("/login", methods=['POST']) 
 def login():
     inputJSON = request.get_json()
+    print("input == ", inputJSON)
     username = inputJSON['username']
     password = inputJSON['password']
     if User.login(username,password):

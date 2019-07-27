@@ -8,14 +8,24 @@ class LoginForm extends React.Component {
       this.props.form.validateFields((err, values) => {
           console.log("receive fields of ", values)
         if (!err) {
-            fetch('localhost:5000/login', {
+            fetch('http://localhost:5000/login', {
                 method: 'POST',
                 body: JSON.stringify(values),
-                mode: 'cors'
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                },
             })
             .then(response => response.json())
-            .then(j => console.log(JSON.stringify(j)));
-            document.cookie = "username=" + values["username"]
+            .then(j => {
+                if (j.status === 200){
+                    document.cookie = "username=" + values["username"]
+                } else {
+                    document.cookie = "username=anon"
+                }
+            })
+            .catch(reason => console.log(reason));
         }
       });
     };
