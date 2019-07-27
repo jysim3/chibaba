@@ -51,6 +51,17 @@ class Item:
     def getPhoto(self):
         return self.photo
 
+    @staticmethod 
+    def getAllItems():
+        conn = Item.create_connection()
+        with conn:
+            sql = "SELECT * from items"
+            cur = conn.cursor()
+            cur.execute(sql)
+            conn.commit()
+
+            result = [x for x in cur.fetchall()]
+            return result, cur.description
     @staticmethod
     def setName(itemID, name):
         conn = Item.create_connection()
@@ -201,7 +212,5 @@ class Item:
             
 
 
-'''
 if __name__ == '__main__':
-    #memes = Item("Memes", 123, 500, 0, "The end of the memes", None, 46833883)
-'''
+    memes = Item("Memes", 123, 500, 0, "The end of the memes", None, 46833883)

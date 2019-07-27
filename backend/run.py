@@ -1,3 +1,4 @@
+#!/usr/bin/python3 
 from flask import Flask, request, json, jsonify
 from user import User
 from item import Item
@@ -6,27 +7,19 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/items')
+@app.route("/items")
 def returnItem():
-    try:
-        conn = sqlite3.connect('chibaba.db')
-    except Error as e:
-        print("Error on Sql", e)
-
-    cur = conn.cursor()
-
-    cur.execute("SELECT * from items")
-    conn.commit()
-    result = cur.fetchall()
-
+    result, title = Item.getAllItems()
     items = []
     for row in result:
-        print (row);
-        items.append({'itemName': row[0], 'itemID': row[1], 'price': row[2], 'itemStatus': row[3], 'itemDescription': row[4], 'id':row[5]})
-     
-    conn.close()
+        item = dict()
+        print(row)
+        for idx, column in enumerate(row):
+            item[title[idx][0]] = row[idx]
 
-    return (json.dumps(items))
+        items.append(item)
+
+    return jsonify(items)
 
 @app.route("/purchaseItem", methods=['POST'])
 def purchaseItem():
@@ -69,4 +62,4 @@ def sellItem():
     return jsonify(status=200)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

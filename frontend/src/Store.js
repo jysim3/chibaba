@@ -5,27 +5,33 @@ const { Header, Content, Footer, Sider } = Layout;
 class Store extends React.Component {
     state = {
         collapsed: false,
+        listData: []
     };
 
     render() {
+        
         const IconText = ({ type, text }) => (
             <span>
                 <Icon type={type} style={{ marginRight: 8 }} />
                 {text}
             </span>
         );
-        const listData = [];
-        for (let i = 0; i < 23; i++) {
-            listData.push({
-                href: 'http://ant.design',
-                title: `ant design part ${i}`,
-                description:
-                    'Ant Design, a design language for background applications, is refined by Ant UED Team.',
-                content:
-                    'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-            });
-        }
-
+        fetch('http://localhost:5000/items')
+        .then(response => response.json())
+        .then(j => {
+            let data = [];
+            for (let item of j){
+                data.push({
+                    href: 'http://ant.design',
+                    title: item['itemName'],
+                    description:
+                        item['itemDescription'],
+                });
+                console.log(item['itemName']);
+            }
+            this.setState({ listData: data})
+        
+        })
         return (
 
             <Content style={{ margin: '0 16px' }}>
@@ -63,13 +69,6 @@ class Store extends React.Component {
 
 
 
-
-
-
-
-
-
-
                         <List
                             itemLayout="vertical"
                             size="large"
@@ -79,7 +78,7 @@ class Store extends React.Component {
                                 },
                                 pageSize: 5,
                             }}
-                            dataSource={listData}
+                            dataSource={this.state.listData}
                             footer={
                                 <></>
                             }
@@ -91,12 +90,12 @@ class Store extends React.Component {
                                         <IconText type="like-o" text="156" />,
                                         <IconText type="message" text="2" />,
                                     ]}
-                                    extra={
-                                        <img
-                                            width={272}
-                                            alt="logo"
-                                            src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-                                        />
+                                    extra={ item.img ? <img
+                                        width={272}
+                                        alt="logo"
+                                        src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
+                                    /> : null 
+                                       
                                     }
                                 >
                                     <List.Item.Meta
@@ -104,7 +103,6 @@ class Store extends React.Component {
                                         title={<a href={item.href}>{item.title}</a>}
                                         description={item.description}
                                     />
-                                    {item.content}
                                 </List.Item>
                             )}
                         />

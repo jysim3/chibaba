@@ -111,7 +111,7 @@ class User:
             print(e)
 
         cur = conn.cursor()
-        cur.execute(f"SELECT * from items where id = {userID}")
+        #cur.execute(f"SELECT * from items where id = {userID}")
         conn.commit()
 
         return cur.fetchall()
