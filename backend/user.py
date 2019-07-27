@@ -22,6 +22,7 @@ def create_db(db_file):
     except Error as e:
         print("Error on Sql", e)
 
+
 class User:
     def createUser(self, userID,userName, password):
         try:
@@ -35,6 +36,7 @@ class User:
         cur.execute("INSERT INTO USER VALUES (?,?,?,?,null)", (userID, userName, password, creation_time))
         conn.commit()
         print("Created Successfully!")
+
     
     def deleteUser(self, userID):
         try:
@@ -44,7 +46,7 @@ class User:
 
         cur = conn.cursor()
         
-        cur.execute(f"DELETE FROM USER WHERE userID == {userID}")
+        cur.execute("DELETE FROM USER WHERE userID == (?) ", userID)
         conn.commit()
         print("Deleted Successfully")
 
@@ -55,7 +57,7 @@ class User:
             print(e)
 
         cur = conn.cursor()
-        cur.execute(f"UPDATE USER SET password = self.password WHERE userID = {userID}")
+        cur.execute("UPDATE USER SET password = self.password WHERE userID == (?)", userID)
         conn.commit()
         print("Updated Successfully")
 
@@ -66,9 +68,20 @@ class User:
             print(e)
 
         cur = conn.cursor()
-        cur.execute(f"SELETE * FROM USER")
+        cur.execute("SELETE * FROM USER")
         conn.commit()
         return cur.fatchall()
+
+    def login(userID, password ):
+        try:
+            conn = sqlite3.connect('chibaba.db')
+        except Error as e:
+            print(e)
+
+        cur = conn.cursor()
+        cur.execute("SELETE * FROM USER WHERE userID == (?) AND password == (?)", userID,password)
+        conn.commit()
+        return cur.fatchall()        
 
     def showItem_user(self, userID):
         try:
@@ -77,13 +90,15 @@ class User:
             print(e)
 
         cur = conn.cursor()
-        cur.execute(f"SELECT * from item where userID = {userID}")
+        cur.execute("SELECT * from items where id == ? ",userID)
         conn.commit()
 
-        return cur.fatchall()
+        return cur.fetchall()
 
 
 if __name__ == '__main__':
     create_db('chibaba.db')
     a = User()
-    a.createUser(46833883,'name',1234455)
+    items = a.showItem_user(46833883)
+    for item in items:
+        print(item)

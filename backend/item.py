@@ -163,6 +163,6 @@ class Item:
 
 
 if __name__ == '__main__':
-    memes = Item("Memes", 123, 500, 0, "The end of the memes", None, 46833333)
+    memes = Item("Memes", 123, 500, 0, "The end of the memes", None, 46833883)
 
-    memes2 = Item("asdf", 440, 100, 0, None, None, 0)
+    memes2 = Item("asdf", 440, 100, 0, None, None, 46833883)
