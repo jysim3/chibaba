@@ -1,16 +1,40 @@
 import React from 'react';
 import { Card, Button, Upload, Form, Input, Icon, Select} from 'antd';
+
+import cookie from 'react-cookies';
 const { Option } = Select;
 const { TextArea } = Input;
+
 class Sell extends React.Component {
     state = {
-        free: false
+        free: false,
+        submit: ''
     }
 
     handleSubmit = e => {
       e.preventDefault();
       this.props.form.validateFields((err, values) => {
         if (!err) {
+            let data = values;
+            data['userID'] = cookie.load('userID');
+            fetch('http://localhost:5000/sellItem', {
+                method: 'POST',
+                body: JSON.stringify(values),
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            })
+            .then(response => response.json())
+            .then(j => {
+                if (j.status === 200){
+                    this.state.submit = 'success';
+                    window.location.href = '/';
+                    
+                } 
+            })
+            .catch(reason => console.log(reason));
           console.log('Received values of form: ', values);
         }
       });
@@ -18,6 +42,7 @@ class Sell extends React.Component {
   
     render() {
         const { free } = this.state;
+        const { submit } = this.state;
         console.log(free)
       const { getFieldDecorator } = this.props.form;
       return (
@@ -25,7 +50,7 @@ class Sell extends React.Component {
 
         <Form onSubmit={this.handleSubmit} className="login-form">
           <Form.Item>
-            {getFieldDecorator('itemName', {
+            {getFieldDecorator('name', {
               rules: [{ required: true, message: "Please input your item's name!" }],
             })(
               <Input
@@ -75,6 +100,7 @@ class Sell extends React.Component {
           )}
         </Form.Item>
         <Form.Item wrapperCol={{ span: 12, offset: 6 }}>
+        
           <Button type="primary" htmlType="submit">
             Save world
           </Button>
