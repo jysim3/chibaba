@@ -6,6 +6,8 @@ import { withRouter, BrowserRouter as Router, Route, Link } from "react-router-d
 import LoginForm from "./LoginForm.js";
 import Store  from "./Store.js";
 import Sell  from "./Sell.js";
+import { CookiesProvider } from 'react-cookie';
+
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
@@ -95,6 +97,8 @@ class App extends React.Component {
         );
             });
         return (
+            <CookiesProvider>
+
             <Router>
                 <Layout style={{ minHeight: '100vh' }}>
 
@@ -112,6 +116,8 @@ class App extends React.Component {
 
                 </Layout>
             </Router>
+            </CookiesProvider>
+
         );
     }
 }

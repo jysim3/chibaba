@@ -1,5 +1,6 @@
 from flask import Flask, request, json, jsonify
 from user import User
+from item import Item
 
 app = Flask(__name__)
 
@@ -11,7 +12,7 @@ def purchaseItem():
     if (itemID is None or userID is None):
         return jsonify(status=404)
     
-    #Set item to be sold and make it belong to the user
+    #Set item to be sold and make it belong to the buyer
     User.soldItem(itemID, userID)
     return jsonify(status=200)
 
@@ -25,6 +26,22 @@ def login():
     else:
         return jsonify(status=401),401
 
+@app.route("/sellItem", methods=['POST'])
+def sellItem():
+    inputJSON = request.get_json()
+    #FIXME: CHange this later on, change to whatever the latest ID + 1
+    itemID = inputJSON['itemID']
+    name = inputJSON['name']
+    price = inputJSON['price']
+    status = 1
+    description = inputJSON['description']
+    sellerID = inputJSON['userID']
+
+    itemToSell = Item.addItems(name, itemID, price, status, description, None, sellerID)
+    if (itemToSell == False):
+        return jsonify(status=404)
+    
+    return jsonify(status=200)
 
 if __name__ == '__main__':
     app.run()
