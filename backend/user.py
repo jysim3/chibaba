@@ -68,7 +68,7 @@ class User:
             print(e)
 
         cur = conn.cursor()
-        cur.execute(f"SELECT * FROM USER WHERE password = '{ password , }' AND username = '{ username , }'")
+        cur.execute(f"SELECT * FROM USER WHERE password = '{ password }' AND username = '{ username }'")
         conn.commit()
         k = cur.fetchone()
         print(k)

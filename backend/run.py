@@ -51,7 +51,6 @@ def login():
 def register():
     inputJSON = request.get_json()
     print("input == ", inputJSON)
-
     username = inputJSON['username']
     password = inputJSON['password']
 
@@ -66,7 +65,7 @@ def register():
 def getusrInfo():
     inputJSON = request.get_json()
     print("input == ", inputJSON)
-    userid = inputJSON['userid']
+    userid = inputJSON['userID']
     result,title = User.showUser(userid)
     users = []
     for row in result:
@@ -88,8 +87,9 @@ def sellItem():
     status = 1
     description = inputJSON['description']
     sellerID = inputJSON['userID']
+    image = inputJSON['image']
 
-    itemToSell = Item.addItems(name, price, status, description, None, sellerID)
+    itemToSell = Item.addItems(name, price, status, description, image, sellerID)
     if (itemToSell is None):
         return jsonify(status=404)
 
@@ -135,3 +135,14 @@ if __name__ == '__main__':
 def search():
     inputJSON = request.get_json()
     textString = inputJSON('input')
+    searchResult, title = Item.searchString(textString)
+    items = []
+    for row in searchResult:
+        item = dict()
+        print(row)
+        for idx, column in enumerate(row):
+            item[title[idx][0]] = row[idx]
+
+        items.append(item)
+
+    return jsonify(items)   

@@ -2,6 +2,7 @@ import os.path
 from os import path
 import sqlite3
 from sqlite3 import Error
+import base64
 
 class Item:
     name = None
@@ -147,6 +148,7 @@ class Item:
                                         itemStatus text,
                                         itemDescription text,
                                         buyerID integer,
+                                        itemImage blob,
                                         id integer NOT NULL,
                                         FOREIGN KEY (id) REFERENCES USER (userID)
                                     ); """
@@ -173,9 +175,9 @@ class Item:
 
         lastUID = None
         with conn:
-            item = (self.name, self.price, self.status, self.description, self.userID, None);
-            sql = ''' INSERT INTO items(itemName, price, itemStatus, itemDescription, id, buyerID)
-                        VALUES(?, ?, ?, ?, ?, ?) '''
+            item = (self.name, self.price, self.status, self.description, self.userID, None, self.image);
+            sql = ''' INSERT INTO items(itemName, price, itemStatus, itemDescription, id, buyerID, itemImage)
+                        VALUES(?, ?, ?, ?, ?, NULL, ?) '''
             curs = conn.cursor()
             lastUID = curs.execute(sql, item).lastrowid
 
@@ -208,10 +210,34 @@ class Item:
 
     @staticmethod
     def addItems(name, price, status, description, photo, userID):
-        item = Item(name, price, status, description, None, userID)
+        item = Item(name, price, status, description, photo, userID)
         if (item is None):
             return None
         return item.getID()
+
+    @staticmethod
+    def searchString(inputString):
+        sql0 = """DROP TABLE test;"""
+        sql = """CREATE VIRTUAL TABLE test USING fts5(itemName, itemDescription, itemID);"""
+        sql2 = """INSERT INTO TEST SELECT ITEMNAME, ITEMDESCRIPTION, ITEMID FROM ITEMS;"""
+
+        conn = sqlite3.connect("chibaba.db")
+        c = conn.cursor()
+
+        c.execute(sql0)
+        c.execute(sql)
+        c.execute(sql2)
+
+        c.execute("SELECT ITEMID FROM TEST WHERE TEST MATCH inputString=?", (inputString, ))
+
+        itemsIDs = []
+        items = []
+        itemsIDs = c.fetchall()
+
+        for item in itemsIDs:
+            items.append(Item.getItem(item))
+
+        return items
 
 if __name__ == '__main__':
     memes = Item("Memes", 500, 0, "The end of the memes", None, 11111111)
