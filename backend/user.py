@@ -31,8 +31,8 @@ class User:
 
         cur = conn.cursor()
 
-        self.creation_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        cur.execute("INSERT INTO USER VALUES (?,?,?,?)", (self.userID, self.userName, self.password, self.creation_time))
+        creation_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cur.execute("INSERT INTO USER VALUES (?,?,?,?,null)", (userID, userName, password, creation_time))
         conn.commit()
         print("Created Successfully!")
     
@@ -44,7 +44,7 @@ class User:
 
         cur = conn.cursor()
         
-        cur.execute(f"DELETE FROM USER WHERE userID == {self.userID}")
+        cur.execute(f"DELETE FROM USER WHERE userID == {userID}")
         conn.commit()
         print("Deleted Successfully")
 
@@ -55,7 +55,7 @@ class User:
             print(e)
 
         cur = conn.cursor()
-        cur.execute(f"UPDATE USER SET password = self.password WHERE userID = {self.userID}")
+        cur.execute(f"UPDATE USER SET password = self.password WHERE userID = {userID}")
         conn.commit()
         print("Updated Successfully")
 
@@ -77,7 +77,7 @@ class User:
             print(e)
 
         cur = conn.cursor()
-        cur.execute(f"SELECT * from item where userID = {self.userID}")
+        cur.execute(f"SELECT * from item where userID = {userID}")
         conn.commit()
 
         return cur.fatchall()
@@ -86,4 +86,4 @@ class User:
 if __name__ == '__main__':
     create_db('chibaba.db')
     a = User()
-    a.deleteUser('46833333')
+    a.createUser(46833883,'name',1234455)
