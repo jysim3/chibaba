@@ -10,7 +10,7 @@ class LoginForm extends React.Component {
       this.props.form.validateFields((err, values) => {
           console.log("receive fields of ", err)
         if (!err) {
-            fetch('http://localhost:5000/login', {
+            fetch('http://localhost:5000/register', {
                 method: 'POST',
                 body: JSON.stringify(values),
                 mode: 'cors',
@@ -22,8 +22,8 @@ class LoginForm extends React.Component {
             .then(response => response.json())
             .then(j => {
                 if (j.status === 200){
-                    cookie.save('userID', values['userID'], { path: '/' })
-                    cookie.save('username', values['username'], { path: '/' })
+                    cookie.save('userID', j['userID'], { path: '/' })
+                    cookie.save('username', j['username'], { path: '/' })
                     onCancel();
                     
                 } 
@@ -67,9 +67,9 @@ class LoginForm extends React.Component {
               Forgot password
             </a>
             <Button type="primary" htmlType="submit" className="login-form-button">
-              Log in
+              Register
             </Button>
-            Or <a href="/register">register now!</a>
+            Or <a href="register">register now!</a>
           </Form.Item>
         </Form>
       );

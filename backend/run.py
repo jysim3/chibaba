@@ -50,7 +50,7 @@ def login():
 def register():
     inputJSON = request.get_json()
     print("input == ", inputJSON)
-    userid = inputJSON['userid']
+    userid = inputJSON['userID']
     username = inputJSON['username']
     password = inputJSON['password']
     if User.createUser(userid, username, password):
@@ -62,7 +62,7 @@ def register():
 def getusrInfo():
     inputJSON = request.get_json()
     print("input == ", inputJSON)
-    userid = inputJSON['userid']
+    userid = inputJSON['userID']
     result,title = User.showUser(userid)
     users = []
     for row in result:
