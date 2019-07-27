@@ -131,3 +131,14 @@ if __name__ == '__main__':
 def search():
     inputJSON = request.get_json()
     textString = inputJSON('input')
+    searchResult, title = Item.searchString(textString)
+    items = []
+    for row in searchResult:
+        item = dict()
+        print(row)
+        for idx, column in enumerate(row):
+            item[title[idx][0]] = row[idx]
+
+        items.append(item)
+
+    return jsonify(items)   

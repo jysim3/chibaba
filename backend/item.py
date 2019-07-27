@@ -213,6 +213,30 @@ class Item:
             return None
         return item.getID()
 
+    @staticmethod
+    def searchString(inputString):
+        sql0 = """DROP TABLE test;"""
+        sql = """CREATE VIRTUAL TABLE test USING fts5(itemName, itemDescription, itemID);"""
+        sql2 = """INSERT INTO TEST SELECT ITEMNAME, ITEMDESCRIPTION, ITEMID FROM ITEMS;"""
+
+        conn = sqlite3.connect("chibaba.db")
+        c = conn.cursor()
+
+        c.execute(sql0)
+        c.execute(sql)
+        c.execute(sql2)
+
+        c.execute("SELECT ITEMID FROM TEST WHERE TEST MATCH inputString=?", (inputString, ))
+
+        itemsIDs = []
+        items = []
+        itemsIDs = c.fetchall()
+
+        for item in itemsIDs:
+            items.append(Item.getItem(item))
+
+        return items
+
 if __name__ == '__main__':
     memes = Item("Memes", 500, 0, "The end of the memes", None, 5161616)
     memes2 = Item("memes, the second coming", 450, 0, "The resurrection", None, 5161616)
