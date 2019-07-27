@@ -14,7 +14,6 @@ def create_db(db_file):
                                         password text,
                                         creation_time time,
                                         item text references items(itemid)
-                                        -- points integer
                                     ); """
         cur = conn.cursor()
         cur.execute(create_table_user)
@@ -45,7 +44,7 @@ class User:
 
         cur = conn.cursor()
         
-        cur.execute("DELETE FROM USER WHERE userID == self.userID")
+        cur.execute(f"DELETE FROM USER WHERE userID == {self.userID}")
         conn.commit()
         print("Deleted Successfully")
 
@@ -56,7 +55,7 @@ class User:
             print(e)
 
         cur = conn.cursor()
-        cur.execute("UPDATE USER SET password = self.password WHERE userID = self.userID")
+        cur.execute(f"UPDATE USER SET password = self.password WHERE userID = {self.userID}")
         conn.commit()
         print("Updated Successfully")
 
@@ -78,7 +77,7 @@ class User:
             print(e)
 
         cur = conn.cursor()
-        cur.execute("SELECT * from item where userID = self.userID")
+        cur.execute(f"SELECT * from item where userID = {self.userID}")
         conn.commit()
 
         return cur.fatchall()
