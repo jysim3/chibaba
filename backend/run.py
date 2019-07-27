@@ -78,6 +78,7 @@ def sellItem():
 @app.route("/purchaseHistory", methods=['POST'])
 def getPurchaseHistory():
     inputJSON = request.get_json()
+    print(inputJSON)
     userID = inputJSON['userID']
     result, title = User.purchaseHistory(userID)
     items = []
@@ -108,4 +109,4 @@ def getSellingHistory():
     return jsonify(items)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

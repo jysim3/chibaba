@@ -2,11 +2,13 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { Button, Layout, Menu, Breadcrumb, List, Avatar, Icon, Modal, Form, Input, Checkbox } from 'antd';
-import { withRouter, BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { Redirect, withRouter, BrowserRouter as Router, Route, Link } from "react-router-dom";
+import cookie  from "react-cookies";
 import LoginForm from "./LoginForm.js";
 import Store  from "./Store.js";
 import Sell  from "./Sell.js";
-import { CookiesProvider } from 'react-cookie';
+import Profile  from "./Profile.js";
+import PurchaseHistory  from "./History.js";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -25,8 +27,12 @@ class App extends React.Component {
         activePage: "home"
     };
   
+    componentWillMount() {
+        this.setState(  { username: cookie.load('username') } );
+    }
+    
     MenuOnClick = ({item, keyPath}) => {
-        if (keyPath[0] === "login") {
+        if (keyPath[0] === "/login") {
             this.setState({
                 login: true
             })
@@ -45,46 +51,51 @@ class App extends React.Component {
     }
     
     render() {
+        const Logout = () => {
+            cookie.remove('userID', { path: '/' })
+            return (<Redirect to='/'></Redirect>)
+        }
+        const ItemMenu = (props) => {
+            const {idx, icon, text} = props;
+            
+            return (
+            <Menu.Item {...props}
+            >
+            <Link to={idx}> 
+                <Icon type={icon} />
+                <span>{text}</span>
+            </Link>
+            </Menu.Item>
+            );
+        }
         const MainMenu = withRouter(props => {
             const { location } = props
             return (
             <Menu theme="dark" defaultSelectedKeys={[location.pathname]} mode="horizontal"
                 onClick={this.MenuOnClick}
                 style={{ lineHeight: '64px' }}>
-                <Menu.Item key="/store"
-                    //style={{ float: 'left' }}
-                    >
-                    <Link to="/store"> 
-                        <Icon type="shopping" />
-                        <span>Buy</span>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="/sell"
-                    //style={{ float: 'left' }}
-                    >
-                    <Link to="/sell"> 
-                        <Icon type="dollar" />
-                        <span>Sell / Donate</span>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item
-                    //style={{ float: 'left' }}
-                    key="/cart">
-                    <Link to="/cart"> 
-                        <Icon type="shopping-cart" />
-                        <span>Cart</span>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item
-                    //style={{ float: 'left' }}
-                    key="login">
+                <ItemMenu idx="/store" key="/store" icon="shopping" text="Buy" />
+                <ItemMenu idx="/sell" key="/sell" icon="dollar" text="Sell / Donate" />
+                <ItemMenu idx="/cart" key="/cart" icon="shopping-cart" text="Cart" />
+                { this.state.userID ? 
+            
+                <SubMenu key="profile"
+                    title={
+
                         <span>
                             <Icon type="user" />
-                            <span>Login</span>
+                            <span>{this.state.username.charAt(0).toUpperCase() + this.state.username.slice(1)}</span>
                         </span>
-                    
-    
-                </Menu.Item>
+                    }
+                    >
+                    <ItemMenu idx="/profile"   key="/profile"   icon="idcard" text="Profile" />
+                    <ItemMenu idx="/history"   key="/history"   icon="history" text="Purchase History" />
+                    <ItemMenu idx="/userItems" key="/userItems" icon="dollar" text="Listed items" />
+                    <ItemMenu idx="/logout" key="/logout" icon="logout" text="Logout" />
+                </SubMenu>
+                :
+                <ItemMenu idx="/login" key="/login" icon="login" text="Login" />
+            }
                 <Modal
           title="Login form"
           visible={this.state.login}
@@ -97,7 +108,6 @@ class App extends React.Component {
         );
             });
         return (
-            <CookiesProvider>
 
             <Router>
                 <Layout style={{ minHeight: '100vh' }}>
@@ -111,13 +121,15 @@ class App extends React.Component {
                         <Route path="/store" component={Store} />
                         <Route path="/sell" component={Sell} />
                         <Route path="/cart" component={Cart} />
+                        <Route path="/profile" component={Profile} />
+                        <Route path="/history" component={PurchaseHistory} />
+                        <Route path="/logout" component={Logout}/>
+                        {/* <Route path="/userItems" component={UserItems} /> */}
                         <Footer style={{ textAlign: 'center' }}> </Footer>
                     </Layout>
 
                 </Layout>
             </Router>
-            </CookiesProvider>
-
         );
     }
 }

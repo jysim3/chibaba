@@ -25,7 +25,7 @@ class Store extends React.Component {
                     href: 'http://ant.design',
                     title: item['itemName'],
                     description:
-                        item['itemDescription'],
+                        item['itemDescription']
                 });
                 console.log(item['itemName']);
             }

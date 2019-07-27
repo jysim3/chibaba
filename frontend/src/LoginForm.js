@@ -1,12 +1,13 @@
 import React from 'react';
 import { Button, Icon, Form, Input, Checkbox } from 'antd';
-import { useCookies } from 'react-cookie';
+import cookie from 'react-cookies'
+
 class LoginForm extends React.Component {
     handleSubmit = e => {
 
       e.preventDefault();
       this.props.form.validateFields((err, values) => {
-          console.log("receive fields of ", values)
+          console.log("receive fields of ", err)
         if (!err) {
             fetch('http://localhost:5000/login', {
                 method: 'POST',
@@ -20,9 +21,10 @@ class LoginForm extends React.Component {
             .then(response => response.json())
             .then(j => {
                 if (j.status === 200){
-                    document.cookie = "username=" + values["username"]
+                    cookie.save('userID', j['userID'], { path: '/' })
                 } else {
-                    document.cookie = "username=anon"
+                    cookie.remove('userID', { path: '/' })
+                     
                 }
             })
             .catch(reason => console.log(reason));
