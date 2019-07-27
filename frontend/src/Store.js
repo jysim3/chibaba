@@ -53,6 +53,10 @@ class Store extends React.Component {
                                 <Icon type="home" />
                                 <span>Shelter</span>
                             </Menu.Item>
+                            <Menu.Item key="5">
+                                <Icon type="laptop" />
+                                <span>Jobs</span>
+                            </Menu.Item>
                         </Menu>
                     </Sider>
                     <Content style={{ marginLeft: "10px" }}>
@@ -77,9 +81,7 @@ class Store extends React.Component {
                             }}
                             dataSource={listData}
                             footer={
-                                <div>
-                                    <b>ant design</b> footer part
-                                </div>
+                                <></>
                             }
                             renderItem={item => (
                                 <List.Item

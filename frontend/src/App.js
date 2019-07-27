@@ -2,7 +2,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { Button, Layout, Menu, Breadcrumb, List, Avatar, Icon, Modal, Form, Input, Checkbox } from 'antd';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { withRouter, BrowserRouter as Router, Route, Link } from "react-router-dom";
 import LoginForm from "./LoginForm.js";
 import Store  from "./Store.js";
 import Sell  from "./Sell.js";
@@ -10,18 +10,27 @@ const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
 
+class Cart extends React.Component {
+    render() {
+        return (<></>);
+    }
+}
 
 
 class App extends React.Component {
     state = {
-        login: false
+        login: false,
+        activePage: "home"
     };
   
     MenuOnClick = ({item, keyPath}) => {
         if (keyPath[0] === "login") {
-            console.log("jsdafjkl");
             this.setState({
                 login: true
+            })
+        } else {
+            this.setState({
+                activePage: keyPath[0]
             })
         }
 
@@ -32,29 +41,37 @@ class App extends React.Component {
             login: false
         })
     }
-
+    
     render() {
-        const MainMenu = () => (
-            <Menu theme="dark" defaultSelectedKeys={['1']} mode="horizontal"
+        const MainMenu = withRouter(props => {
+            const { location } = props
+            return (
+            <Menu theme="dark" defaultSelectedKeys={[location.pathname]} mode="horizontal"
                 onClick={this.MenuOnClick}
                 style={{ lineHeight: '64px' }}>
-                <Menu.Item key="1"
+                <Menu.Item key="/store"
                     //style={{ float: 'left' }}
                     >
-                    <Icon type="shopping" />
-                    <span>Buy</span>
+                    <Link to="/store"> 
+                        <Icon type="shopping" />
+                        <span>Buy</span>
+                    </Link>
                 </Menu.Item>
-                <Menu.Item key="2"
+                <Menu.Item key="/sell"
                     //style={{ float: 'left' }}
                     >
-                    <Icon type="dollar" />
-                    <span>Sell / Donate</span>
+                    <Link to="/sell"> 
+                        <Icon type="dollar" />
+                        <span>Sell / Donate</span>
+                    </Link>
                 </Menu.Item>
                 <Menu.Item
                     //style={{ float: 'left' }}
-                    key="9">
-                    <Icon type="shopping-cart" />
-                    <span>Cart</span>
+                    key="/cart">
+                    <Link to="/cart"> 
+                        <Icon type="shopping-cart" />
+                        <span>Cart</span>
+                    </Link>
                 </Menu.Item>
                 <Menu.Item
                     //style={{ float: 'left' }}
@@ -76,6 +93,7 @@ class App extends React.Component {
       </Modal>
             </Menu>
         );
+            });
         return (
             <Router>
                 <Layout style={{ minHeight: '100vh' }}>
@@ -87,8 +105,9 @@ class App extends React.Component {
                     <Layout>
 
                         <Route path="/store" component={Store} />
-
-                        <Footer style={{ textAlign: 'center' }}>Lmao footer </Footer>
+                        <Route path="/sell" component={Sell} />
+                        <Route path="/cart" component={Cart} />
+                        <Footer style={{ textAlign: 'center' }}> </Footer>
                     </Layout>
 
                 </Layout>
