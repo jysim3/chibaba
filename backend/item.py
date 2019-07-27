@@ -55,7 +55,10 @@ class Item:
     def getAllItems():
         conn = Item.create_connection()
         with conn:
-            sql = "SELECT * from items"
+            sql = """SELECT items.itemname, items.itemID, items.price, items.itemStatus, items.itemDescription, items.buyerID, items.itemImage, user.userName,USER.score
+                    FROM items
+                    INNER JOIN USER
+                    ON items.id = user.userID;"""
             cur = conn.cursor()
             cur.execute(sql)
             conn.commit()
@@ -175,7 +178,7 @@ class Item:
 
         lastUID = None
         with conn:
-            item = (self.name, self.price, self.status, self.description, self.userID, None, self.image);
+            item = (self.name, self.price, self.status, self.description, self.userID, None, self.photo);
             sql = ''' INSERT INTO items(itemName, price, itemStatus, itemDescription, id, buyerID, itemImage)
                         VALUES(?, ?, ?, ?, ?, NULL, ?) '''
             curs = conn.cursor()
