@@ -58,6 +58,23 @@ def register():
     else:
         return jsonify(status=401),401
 
+@app.route("/getusrInfo", methods=['POST'])
+def getusrInfo():
+    inputJSON = request.get_json()
+    print("input == ", inputJSON)
+    userid = inputJSON['userid']
+    result,title = User.showUser(userid)
+    users = []
+    for row in result:
+        user = dict()
+        for idx, column in enumerate(row):
+            user[title[idx][0]] = row[idx]
+        users.append(user)
+        return jsonify(users),200
+    else:
+        return jsonify(status=401),401
+
+
 @app.route("/sellItem", methods=['POST'])
 def sellItem():
     inputJSON = request.get_json()

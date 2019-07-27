@@ -38,6 +38,7 @@ class User:
         cur.execute("INSERT INTO USER VALUES (?,?,?,?,null)", (userID, userName, password, creation_time))
         conn.commit()
         print("Created Successfully!")
+        conn.close()
 
     
     def deleteUser(self, userID):
@@ -97,18 +98,20 @@ class User:
 
         return None
 
-    def showUser(self,userID):
+    def showUser(userID):
         try:
             conn = sqlite3.connect('chibaba.db')
         except Error as e:
             print(e)
 
         cur = conn.cursor()
-        cur.execute("SELETE * FROM USER")
-        conn.commit()
-        return cur.fetchall()       
+        cur.execute("SELECT * FROM USER WHERE userID=?", (userID, ))
+        result = [x for x in cur.fetchall()]
+        # print(result)
+        return result,cur.description
 
-    def showItem_user(self, userID):
+
+    def showItem_user(userID):
         try:
             conn = sqlite3.connect('chibaba.db')
         except Error as e:
@@ -149,4 +152,4 @@ class User:
 if __name__ == '__main__':
     create_db('chibaba.db')
     a = User()
-    a.createUser(5161616, "Steven Shen", 990928)
+    a.showUser(11111111)
