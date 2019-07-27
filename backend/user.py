@@ -14,7 +14,7 @@ def create_db(db_file):
                                         userName text,
                                         password text,
                                         creation_time time,
-                                        item text references items(itemid)
+                                        item text references items(itemID)
                                     ); """
         cur = conn.cursor()
         cur.execute(create_table_user)
@@ -48,7 +48,7 @@ class User:
 
         cur = conn.cursor()
         
-        cur.execute("DELETE FROM USER WHERE userID == (?) ", userID)
+        cur.execute("DELETE FROM USER WHERE userID == {userID, }")
         conn.commit()
         print("Deleted Successfully")
 
@@ -60,7 +60,7 @@ class User:
             print(e)
 
         cur = conn.cursor()
-        cur.execute(f"SELECT * FROM USER WHERE password = '{ password }' AND username = '{ username }'")
+        cur.execute("SELECT * FROM USER WHERE password = '{ password, }' AND username = '{ username, }'")
         conn.commit()
         if cur.fetchone():
             return True
@@ -75,12 +75,12 @@ class User:
             print(e)
 
         cur = conn.cursor()
-        cur.execute("UPDATE USER SET password = self.password WHERE userID == (?)", userID)
+        cur.execute("UPDATE USER SET password = self.password WHERE userID = '{userID, }'")
         conn.commit()
         return cur.fetchall()
 
     @staticmethod
-    def soldItem(self, itemid, newUserID):
+    def soldItem(itemid, newUserID):
         result = Item.setBuyer(itemid, newUserID)
         if (result == False):
             return False
@@ -115,15 +115,38 @@ class User:
             print(e)
 
         cur = conn.cursor()
-        cur.execute("SELECT * from items where id == ? ",userID)
+        cur.execute("SELECT * from items where id = '{userID, }'")
         conn.commit()
 
         return cur.fetchall()
 
+    @staticmethod
+    def purchaseHistory(userID):
+        conn = User.create_connection()
+        if (conn is None):
+            return None
+
+        with conn:
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM items WHERE buyerID=?", (userID, ))
+            result = [x for x in cur.fetchall()]
+
+        return result, cur.description
+
+    @staticmethod
+    def sellingHistory(userID):
+        conn = User.create_connection()
+        if (conn is None):
+            return None
+        
+        with conn:
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM items WHERE id=?", (userID, ))
+            result = [x for x in cur.fetchall()]
+        
+        return result, cur.description
 
 if __name__ == '__main__':
     create_db('chibaba.db')
     a = User()
-    items = a.showItem_user(46833883)
-    for item in items:
-        print(item)
+    a.createUser(5161616, "Steven Shen", 990928)

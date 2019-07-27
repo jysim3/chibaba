@@ -1,3 +1,4 @@
+#!/usr/bin/python3 
 import sqlite3
 from flask import Flask, request, json, jsonify
 from user import User
@@ -7,33 +8,26 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/items')
+@app.route("/items")
 def returnItem():
-    try:
-        conn = sqlite3.connect('chibaba.db')
-    except Error as e:
-        print("Error on Sql", e)
-
-    cur = conn.cursor()
-
-    cur.execute("SELECT * from items")
-    conn.commit()
-    result = cur.fetchall()
-
+    result, title = Item.getAllItems()
     items = []
     for row in result:
-        print (row);
-        items.append({'itemName': row[0], 'itemID': row[1], 'price': row[2], 'itemStatus': row[3], 'itemDescription': row[4], 'id':row[5]})
-     
-    conn.close()
+        item = dict()
+        print(row)
+        for idx, column in enumerate(row):
+            item[title[idx][0]] = row[idx]
 
-    return (json.dumps(items))
+        items.append(item)
 
-@app.route("/purchaseItem", methods=['POST'])
+    return jsonify(items)
+
+@app.route("/purchaseItems", methods=['POST'])
 def purchaseItem():
     inputJSON = request.get_json()
     itemID = inputJSON['itemID']
     userID = inputJSON['userID']
+    print(itemID + userID)
     if (itemID is None or userID is None):
         return jsonify(status=404)
     
@@ -81,5 +75,37 @@ def sellItem():
     
     return jsonify(status=200)
 
+@app.route("/purchaseHistory", methods=['POST'])
+def getPurchaseHistory():
+    inputJSON = request.get_json()
+    userID = inputJSON['userID']
+    result, title = User.purchaseHistory(userID)
+    items = []
+    for row in result:
+        item = dict()
+        print(row)
+        for idx, column in enumerate(row):
+            item[title[idx][0]] = row[idx]
+
+        items.append(item)
+
+    return jsonify(items)
+
+@app.route("/sellingHistory", methods=['POST'])
+def getSellingHistory():
+    inputJSON = request.get_json()
+    userID = inputJSON['userID']
+    result, title = User.sellingHistory(userID)
+    items = []
+    for row in result:
+        item = dict()
+        print(row)
+        for idx, column in enumerate(row):
+            item[title[idx][0]] = row[idx]
+
+        items.append(item)
+
+    return jsonify(items)
+
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
