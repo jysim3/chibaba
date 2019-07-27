@@ -28,11 +28,12 @@ def returnItem():
 
     return (json.dumps(items))
 
-@app.route("/purchaseItem", methods=['POST'])
+@app.route("/purchaseItems", methods=['POST'])
 def purchaseItem():
     inputJSON = request.get_json()
     itemID = inputJSON['itemID']
     userID = inputJSON['userID']
+    print(itemID + userID)
     if (itemID is None or userID is None):
         return jsonify(status=404)
     
@@ -67,6 +68,12 @@ def sellItem():
         return jsonify(status=404)
     
     return jsonify(status=200)
+
+@app.route("/purchaseHistory", methods=['POST'])
+def getPurchaseHistory():
+    inputJSON = request.get_json()
+    userID = inputJSON['userID']
+    history = User.purchaseHistory(userID)
 
 if __name__ == '__main__':
     app.run()

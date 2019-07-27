@@ -188,7 +188,7 @@ class Item:
         
         with conn:
             cur = conn.cursor()
-            cur.execute("SELECT * FROM items WHERE id=?", (itemID, ))
+            cur.execute("SELECT * FROM items WHERE itemID=?", (itemID, ))
             return cur.fetchone()
         
         return None
@@ -201,7 +201,6 @@ class Item:
             
 
 
-'''
 if __name__ == '__main__':
-    #memes = Item("Memes", 123, 500, 0, "The end of the memes", None, 46833883)
-'''
+    memes = Item("Memes", 123, 500, 0, "The end of the memes", None, 5161616)
+    memes2 = Item("memes, the second coming", 440, 450, 0, "The resurrection", None, 5161616)
