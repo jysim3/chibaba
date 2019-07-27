@@ -77,13 +77,16 @@ class User:
             print(e)
 
         cur = conn.cursor()
-        cur.execute(f"SELECT * from item where userID = {userID}")
+        cur.execute(f"SELECT * from items where id = {userID}")
         conn.commit()
 
-        return cur.fatchall()
+        return cur.fetchall()
 
 
 if __name__ == '__main__':
     create_db('chibaba.db')
     a = User()
-    a.createUser(46833883,'name',1234455)
+    items = a.showItem_user(46833883)
+
+    for item in items:
+        print(item)
