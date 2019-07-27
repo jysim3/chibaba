@@ -10,10 +10,11 @@ def create_db(db_file):
     try:
         conn = sqlite3.connect(db_file)
         create_table_user = """CREATE TABLE IF NOT EXISTS USER(
-                                        userID integer primary key,
-                                        userName text,
+                                        userID integer primary key AUTOINCREMENT,
+                                        userName text NOT NULL UNIQUE,
                                         password text,
                                         creation_time time,
+                                        score integer,
                                         item text references items(itemID)
                                     ); """
         cur = conn.cursor()
@@ -26,7 +27,7 @@ def create_db(db_file):
 
 class User:
     @staticmethod
-    def createUser(userID,userName, password):
+    def createUser(userName, password):
         try:
             conn = sqlite3.connect('chibaba.db')
         except Error as e:
@@ -35,10 +36,16 @@ class User:
         cur = conn.cursor()
 
         creation_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        cur.execute("INSERT INTO USER VALUES (?,?,?,?,null)", (userID, userName, password, creation_time))
+        cur.execute("INSERT INTO USER(userName,password,creation_time,item) VALUES (?,?,?,0,null)", (userName, password, creation_time))
         conn.commit()
         print("Created Successfully!")
-        conn.close()
+        cur.execute("SELECT userID FROM USER WHERE userName = ?",(userName,))
+        conn.commit()
+        user_id = cur.fetchone()
+        
+
+        # conn.close()
+        return True,user_id
 
     
     def deleteUser(self, userID):
@@ -83,11 +90,23 @@ class User:
         return cur.fetchall()
 
     @staticmethod
-    def soldItem(itemid, newUserID):
-        result = Item.setBuyer(itemid, newUserID)
+    def soldItem(itemid, buyerID):
+        result = Item.setBuyer(itemid, buyerID)
         if (result == False):
             return False
-        return True
+        else:
+            try:
+                conn = sqlite3.connect('chibaba.db')
+            except Error as e:
+                print(e)
+            cur = conn.cursor()
+            cur.execute("SELECT id FROM item WHERE itemID = ?",(itemid,))
+            conn.commit()
+            sellerID = cur.fetchone()
+            print(sellerID)
+            cur.execute("UPDATE USER SET score = score + 1 WHERE userID = ?",(sellerID))
+            conn.commit()
+            return True
 
     @staticmethod
     def create_connection():
@@ -154,4 +173,3 @@ class User:
 if __name__ == '__main__':
     create_db('chibaba.db')
     a = User()
-    a.showUser(11111111)

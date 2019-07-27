@@ -214,6 +214,6 @@ class Item:
         return item.getID()
 
 if __name__ == '__main__':
-    memes = Item("Memes", 500, 0, "The end of the memes", None, 5161616)
+    memes = Item("Memes", 500, 0, "The end of the memes", None, 11111111)
     memes2 = Item("memes, the second coming", 450, 0, "The resurrection", None, 5161616)
     memes3 = Item("BATTLESTAR GALACTICA", 5000, 0, "Battlestar is pretty lit", None, 5161616)

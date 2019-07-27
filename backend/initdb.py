@@ -11,7 +11,7 @@ create_db('chibaba.db')
 
 user_list = []
 def create_user():
-    user_list = [[11111111,'steven','123456'],[22222222,'yang','123456'],[333333333,'jie','123456'],[44444444,'cat','123456'],[55555555,'jack','123456'],[66666666,'izzy','123456'],[77777777,'micheal','123456'],[88888888,'matt','123456'],[99999999,'steven','123456']]
+    user_list = [[5153884,'Shangjie','123456'],[1234567,'Yang','123456'],[23456789,'Steven','123456'],[3456789,'Cat','123456'],[45678901,'Andrew','123456'],[56789012,'Ravija','123456'],[67890123,'Harrison','123456'],[78901234,'Matt','123456'],[89012345,'Izzy','123456']]
 
     for i in user_list:
         user = []
@@ -20,24 +20,24 @@ def create_user():
         creation_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         user.append(creation_time)
         print(user)
-        cur.execute("INSERT INTO USER VALUES (?,?,?,?,null)", user)
+        cur.execute("INSERT INTO USER VALUES (?,?,?,?,0,null)", user)
     conn.commit()
     print("Created Successfully!")
 
 
 def create_item():
-        #memes = Item("Memes", 123, 500, 0, "The end of the memes", None, 46833883)
-    item_list = [["item1", 1, 50, 0, "The end of the memes", None, 11111111],["item2", 2, 50, 0, "The end of the memes", None, 11111111],["item3", 3, 50, 0, "The end of the memes", None, 33333333],["item4", 4, 50, 0, "The end of the memes", None, 22222222],\
-                 ["item5", 5, 50, 0, "The end of the memes", None, 11111111],["item6", 6, 50, 0, "The end of the memes", None, 11111111],["item7", 7, 50, 0, "The end of the memes", None, 33333333],["item8", 8, 50, 0, "The end of the memes", None, 22222222],\
-                 ["item9", 9, 50, 0, "The end of the memes", None, 22222222],["item10", 10, 50, 0, "The end of the memes", None, 22222222],["item11", 11, 50, 0, "The end of the memes", None, 11111111],["item12", 12, 50, 0, "The end of the memes", None, 11111111]]
+
+    item_list = [["chocolate cake", 0, 0, "Fresh chocolate cake", None, 5153884],["chocolate milk", 0, 0, "Hot chocolate", None, 1234567],["burger", 0, 0, "beef burger", None, 23456789],["BBQ", 0, 0, "Australian BBQ on Wednesday", None, 45678901],\
+                 ["Chinese Food", 0, 0, "The end of the memes", None, 5153884],["Thai Food", 0, 0, "The end of the memes", None, 56789012],["Old iphone", 0, 0, "Can use but slow", None, 33333333],["Hoodies", 0, 0, "Weared few times", None, 89012345],\
+                 ["Fridge", 0, 0, "5 years", None, 45678901],["computer", 0, 0, "10 years ago", None, 67890123],["noodle", 50, 0, "asian noodle pretty ", None, 78901234],["cutlery", 0, 0, "don't perfect but can still use", None, 56789012]]
 
     for i in item_list:
-        Item(i[0],i[1],i[2],i[3],i[4],i[5],i[6])
+        Item(i[0],i[1],i[2],i[3],i[4],i[5])
     conn.commit()
 
     print("Created Successfully!")
 
 
-create_user()
+# create_user()
 create_item()
 

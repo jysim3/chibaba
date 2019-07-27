@@ -33,6 +33,7 @@ def purchaseItem():
     
     #Set item to be sold and make it belong to the buyer
     User.soldItem(itemID, userID)
+    
     return jsonify(status=200)
 
 @app.route("/login", methods=['POST']) 
@@ -50,11 +51,14 @@ def login():
 def register():
     inputJSON = request.get_json()
     print("input == ", inputJSON)
-    userid = inputJSON['userid']
+
     username = inputJSON['username']
     password = inputJSON['password']
-    if User.createUser(userid, username, password):
-        return jsonify(status=200),200
+
+    result, userID = User.createUser(username, password)
+
+    if result:
+        return jsonify(userID),200
     else:
         return jsonify(status=401),401
 
