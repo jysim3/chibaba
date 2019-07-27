@@ -22,27 +22,31 @@ class Food(Item):
     def getFoodType(self):
         return self.foodType
     
-    def setExpiryDate(self, expiryDate):
+    @staticmethod
+    def setExpiryDate(itemID, expiryDate):
         self.expiryDate = expiryDate
         conn = Food.create_connection()
         with conn:
-            task = (expiryDate, self.getID());
+            task = (expiryDate, itemID);
             sql = ''' UPDATE foods
                         SET expiryDate = ?
                     WHERE itemID = ?'''
             cur = conn.cursor()
             cur.execute(sql, task)
+            conn.close()
     
-    def setFoodType(self, foodType):
+    @staticmethod
+    def setFoodType(itemID, foodType):
         self.foodType = foodType
         conn = Food.create_connection()
         with conn:
-            task = (foodType, self.getID());
+            task = (foodType, itemID);
             sql = ''' UPDATE foods
                         SET foodType = ?
                     WHERE itemID = ?'''
             cur = conn.cursor()
             cur.execute(sql, task)
+            conn.close()
     
         #SQL Stuff
     def createSQL(self):
@@ -63,6 +67,7 @@ class Food(Item):
                                         itemDescription text,
                                         foodType text NOT NULL,
                                         expiryDate text NOT NULL,
+                                        itemImage blob,
                                         id integer NOT NULL,
                                         FOREIGN KEY (id) REFERENCES USER (userID)
                                     ); """
@@ -87,9 +92,9 @@ class Food(Item):
             return
 
         with conn:
-            item = (self.name, self.itemId, self.price, self.status, self.description, self.foodType, self.expiryDate, self.userID);
-            sql = ''' INSERT INTO foods(itemName, itemID, price, itemStatus, itemDescription, foodType, expiryDate, id)
-                        VALUES(?, ?, ?, ?, ?, ?, ?, ?) '''
+            item = (self.name, self.itemId, self.price, self.status, self.description, self.foodType, self.expiryDate, self.userID, self.photo, None);
+            sql = ''' INSERT INTO foods(itemName, itemID, price, itemStatus, itemDescription, foodType, expiryDate, id, itemImage, buyerID)
+                        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ? ,?) '''
             curs = conn.cursor()
             curs.execute(sql, item)
         

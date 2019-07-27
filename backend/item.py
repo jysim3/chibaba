@@ -2,6 +2,7 @@ import os.path
 from os import path
 import sqlite3
 from sqlite3 import Error
+import base64
 
 class Item:
     name = None
@@ -147,6 +148,7 @@ class Item:
                                         itemStatus text,
                                         itemDescription text,
                                         buyerID integer,
+                                        itemImage blob,
                                         id integer NOT NULL,
                                         FOREIGN KEY (id) REFERENCES USER (userID)
                                     ); """
@@ -173,9 +175,9 @@ class Item:
 
         lastUID = None
         with conn:
-            item = (self.name, self.price, self.status, self.description, self.userID, None);
-            sql = ''' INSERT INTO items(itemName, price, itemStatus, itemDescription, id, buyerID)
-                        VALUES(?, ?, ?, ?, ?, ?) '''
+            item = (self.name, self.price, self.status, self.description, self.userID, None, self.image);
+            sql = ''' INSERT INTO items(itemName, price, itemStatus, itemDescription, id, buyerID, itemImage)
+                        VALUES(?, ?, ?, ?, ?, NULL, ?) '''
             curs = conn.cursor()
             lastUID = curs.execute(sql, item).lastrowid
 
@@ -208,7 +210,7 @@ class Item:
 
     @staticmethod
     def addItems(name, price, status, description, photo, userID):
-        item = Item(name, price, status, description, None, userID)
+        item = Item(name, price, status, description, photo, userID)
         if (item is None):
             return None
         return item.getID()

@@ -84,8 +84,9 @@ def sellItem():
     status = 1
     description = inputJSON['description']
     sellerID = inputJSON['userID']
+    image = inputJSON['image']
 
-    itemToSell = Item.addItems(name, price, status, description, None, sellerID)
+    itemToSell = Item.addItems(name, price, status, description, image, sellerID)
     if (itemToSell is None):
         return jsonify(status=404)
 
