@@ -23,8 +23,10 @@ def create_db(db_file):
     except Error as e:
         print("Error on Sql", e)
 
+
 class User:
-    def createUser(self, userID,userName, password):
+    @staticmethod
+    def createUser(userID,userName, password):
         try:
             conn = sqlite3.connect('chibaba.db')
         except Error as e:
@@ -36,6 +38,7 @@ class User:
         cur.execute("INSERT INTO USER VALUES (?,?,?,?,null)", (userID, userName, password, creation_time))
         conn.commit()
         print("Created Successfully!")
+
     
     def deleteUser(self, userID):
         try:
@@ -64,6 +67,7 @@ class User:
         else:
             return False
         conn.close()
+
     def updatePassword(userID, password):
         try:
             conn = sqlite3.connect('chibaba.db')
@@ -102,7 +106,7 @@ class User:
         cur = conn.cursor()
         cur.execute("SELETE * FROM USER")
         conn.commit()
-        return cur.fetchall()
+        return cur.fetchall()       
 
     def showItem_user(self, userID):
         try:
