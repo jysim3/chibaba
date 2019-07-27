@@ -48,7 +48,22 @@ class User:
         conn.commit()
         print("Deleted Successfully")
 
-    def updatePassword(self,userID, password):
+    @staticmethod
+    def login(username, password):
+        try:
+            conn = sqlite3.connect('chibaba.db')
+        except Error as e:
+            print(e)
+
+        cur = conn.cursor()
+        cur.execute(f"SELECT * FROM USER WHERE password = '{ password }' AND username = '{ username }'")
+        conn.commit()
+        if cur.fetchone():
+            return True
+        else:
+            return False
+        conn.close()
+    def updatePassword(userID, password):
         try:
             conn = sqlite3.connect('chibaba.db')
         except Error as e:
@@ -57,7 +72,7 @@ class User:
         cur = conn.cursor()
         cur.execute(f"UPDATE USER SET password = self.password WHERE userID = {userID}")
         conn.commit()
-        print("Updated Successfully")
+        return cur.fetchall()
 
     def showUser(self,userID):
         try:

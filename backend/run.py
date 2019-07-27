@@ -1,6 +1,7 @@
-from system import app
 from flask import Flask, request, json, jsonify
 from user import User
+
+app = Flask(__name__)
 
 @app.route("/purchaseItem", methods=['POST'])
 def purchaseItem():
@@ -14,5 +15,16 @@ def purchaseItem():
     User.soldItem(itemID, userID)
     return jsonify(status=200)
 
+@app.route("/login", methods=['POST']) 
+def login():
+    inputJSON = request.get_json()
+    username = inputJSON['username']
+    password = inputJSON['password']
+    if User.login(username,password):
+        return jsonify(status=200),200
+    else:
+        return jsonify(status=401),401
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
