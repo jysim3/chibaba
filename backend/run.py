@@ -6,6 +6,27 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+@app.route('/items')
+def returnItem():
+    try:
+        conn = sqlite3.connect('chibaba.db')
+    except Error as e:
+        print("Error on Sql", e)
+
+    cur = conn.cursor()
+
+    cur.execute("SELECT * from items")
+    conn.commit()
+    result = cur.fetchall()
+
+    items = []
+    for row in result:
+        print (row);
+        items.append({'itemName': row[0], 'itemID': row[1], 'price': row[2], 'itemStatus': row[3], 'itemDescription': row[4], 'id':row[5]})
+     
+    conn.close()
+
+    return (json.dumps(items))
 
 @app.route("/purchaseItem", methods=['POST'])
 def purchaseItem():
