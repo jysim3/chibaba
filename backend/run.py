@@ -79,18 +79,17 @@ def getusrInfo():
 def sellItem():
     inputJSON = request.get_json()
     #FIXME: CHange this later on, change to whatever the latest ID + 1
-    itemID = inputJSON['itemID']
     name = inputJSON['name']
     price = inputJSON['price']
     status = 1
     description = inputJSON['description']
     sellerID = inputJSON['userID']
 
-    itemToSell = Item.addItems(name, itemID, price, status, description, None, sellerID)
-    if (itemToSell == False):
+    itemToSell = Item.addItems(name, price, status, description, None, sellerID)
+    if (itemToSell is None):
         return jsonify(status=404)
-    
-    return jsonify(status=200)
+
+    return jsonify(status=200, itemID=itemToSell)
 
 @app.route("/purchaseHistory", methods=['POST'])
 def getPurchaseHistory():
@@ -126,3 +125,8 @@ def getSellingHistory():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+@app.route("/search", methods=['POST'])
+def search():
+    inputJSON = request.get_json()
+    textString = inputJSON('input')
