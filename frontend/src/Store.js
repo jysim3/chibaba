@@ -57,6 +57,8 @@ class Store extends React.Component {
                         item['itemDescription'],
                     score:
                         item['score'],
+                    img:
+                        item['itemImage']
 
                 });
             }
@@ -85,6 +87,9 @@ class Store extends React.Component {
                             item['itemDescription'],
                         score:
                             item['score'],
+                            img:
+                                item['itemImage']
+        
 
                     });
                 }
@@ -165,7 +170,7 @@ class Store extends React.Component {
                                     extra={ item.img ? <img
                                         width={272}
                                         alt="logo"
-                                        src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
+                                        src={item.img}
                                     /> : null 
                                        
                                     }
