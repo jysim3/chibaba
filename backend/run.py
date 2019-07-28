@@ -14,7 +14,7 @@ def returnItem():
     items = []
     for row in result:
         item = dict()
-        print(row)
+        #print(row)
         for idx, column in enumerate(row):
             item[title[idx][0]] = row[idx]
 
