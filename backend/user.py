@@ -71,9 +71,8 @@ class User:
         cur.execute(f"SELECT * FROM USER WHERE password = '{ password }' AND username = '{ username }'")
         conn.commit()
         k = cur.fetchone()
-        print(k)
-        if cur.fetchone():
-            return True
+        if k:
+            return k[0]
         else:
             return False
         conn.close()
@@ -100,7 +99,7 @@ class User:
             except Error as e:
                 print(e)
             cur = conn.cursor()
-            cur.execute("SELECT id FROM item WHERE itemID = ?",(itemid,))
+            cur.execute("SELECT id FROM items WHERE itemID = ?",(itemid,))
             conn.commit()
             sellerID = cur.fetchone()
             print(sellerID)

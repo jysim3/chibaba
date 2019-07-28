@@ -1,5 +1,7 @@
 import React from 'react';
-import { Icon, Layout, Breadcrumb, Button, Menu, List, Avatar } from 'antd';
+import { Tag, Icon, Layout, Breadcrumb, Button, Menu, List, Avatar } from 'antd';
+import cookie  from "react-cookies";
+
 const { Header, Content, Footer, Sider } = Layout;
 
 class Store extends React.Component {
@@ -7,7 +9,95 @@ class Store extends React.Component {
         collapsed: false,
         listData: []
     };
+    PurchaseItem = (id) => {
+        const data = {
+            itemID: id,
+            userID: cookie.load('userID')
+        }
+        fetch('http://localhost:5000/purchaseItems', {
+            
+            method: 'POST',
+            body: JSON.stringify(data),
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        })
+        .then(response => response.json() )
+        .then(j => {
+            if (j.status === 200){
+                window.location.href = '/';
+            } 
+        })
+    }
+    onSearch = (value) => {
+        const data = {input: value}
+        fetch('http://localhost:5000/search', {
+            
+            method: 'POST',
+            body: JSON.stringify(data),
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        })
+        .then(response => response.json() )
+        .then(j => {
+            console.log(JSON.stringify(j));
+            let data = [];
+            for (let item of j){
+                data.push({
+                    id: item['itemID'],
+                    title: item['itemName'],
+                    description:
+                        item['userName'],
+                    content:
+                        item['itemDescription'],
+                    score:
+                        item['score'],
+                    img:
+                        item['itemImage']
 
+                });
+            }
+            this.setState({ listData: data})
+        
+        })
+    }
+    componentDidMount() {
+        let params = new URLSearchParams(this.props.location.search);
+        const search = params.get('search')
+        if (search){
+            this.onSearch(search)
+        } else {
+            fetch('http://localhost:5000/items')
+            .then(response => response.json())
+            .then(j => {
+                let data = [];
+                for (let item of j){
+                    data.push({
+                        id: item['itemID'],
+                        price: item['price'],
+                        title: item['itemName'],
+                        description:
+                            item['userName'],
+                        content:
+                            item['itemDescription'],
+                        score:
+                            item['score'],
+                            img:
+                                item['itemImage']
+        
+
+                    });
+                }
+                this.setState({ listData: data})
+            
+            })
+        }
+    }
     render() {
         
         const IconText = ({ type, text }) => (
@@ -16,28 +106,13 @@ class Store extends React.Component {
                 {text}
             </span>
         );
-        fetch('http://localhost:5000/items')
-        .then(response => response.json())
-        .then(j => {
-            let data = [];
-            for (let item of j){
-                data.push({
-                    href: 'http://ant.design',
-                    title: item['itemName'],
-                    description:
-                        item['itemDescription']
-                });
-                console.log(item['itemName']);
-            }
-            this.setState({ listData: data})
         
-        })
         return (
 
             <Content style={{ margin: '0 16px' }}>
                 <Breadcrumb style={{ margin: '16px 0' }}>
-                    <Breadcrumb.Item>User</Breadcrumb.Item>
-                    <Breadcrumb.Item>Bill</Breadcrumb.Item>
+                    <Breadcrumb.Item>Buy</Breadcrumb.Item>
+                    <Breadcrumb.Item>Food</Breadcrumb.Item>
                 </Breadcrumb>
 
                 <Layout>
@@ -46,7 +121,7 @@ class Store extends React.Component {
                         <Button type="primary" block onClick={() => { this.setState({ collapsed: !this.state.collapsed }) }} style={{ marginBottom: 16 }}>
                             <Icon type={this.state.collapsed ? 'right' : 'left'} />
                         </Button>
-                        <Menu mode="inline" selectedKeys={['2']}>
+                        <Menu mode="inline" selectedKeys={['1']}>
                             <Menu.Item key="1">
                                 <Icon type="coffee" />
                                 <span>Food</span>
@@ -86,14 +161,16 @@ class Store extends React.Component {
                                 <List.Item
                                     key={item.title}
                                     actions={[
-                                        <IconText type="star-o" text="156" />,
-                                        <IconText type="like-o" text="156" />,
-                                        <IconText type="message" text="2" />,
+                                        <IconText type="star-o" text={item.score} />,
+                                        <Tag color='geekblue'>
+                                            {item.price === 0 ? 'Free!' : '$' + item.price}
+                                        </Tag>,
+                                        <Button type="primary" onClick={() => this.PurchaseItem(item.id)}>Purchase</Button>
                                     ]}
                                     extra={ item.img ? <img
                                         width={272}
                                         alt="logo"
-                                        src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
+                                        src={item.img}
                                     /> : null 
                                        
                                     }
@@ -103,6 +180,7 @@ class Store extends React.Component {
                                         title={<a href={item.href}>{item.title}</a>}
                                         description={item.description}
                                     />
+                                    {item.content}
                                 </List.Item>
                             )}
                         />
