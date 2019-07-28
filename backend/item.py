@@ -66,6 +66,23 @@ class Item:
             result = [x for x in cur.fetchall()]
             return result, cur.description
 
+    @staticmethod 
+    def getAllItemsOnSale():
+        conn = Item.create_connection()
+        with conn:
+            sql = """SELECT items.itemname, items.itemID, items.price, items.itemStatus, items.itemDescription, items.buyerID, items.itemImage, user.userName,USER.score
+                    FROM items
+                    INNER JOIN USER
+                    ON items.id = user.userID
+                    WHERE items.itemStatus = 1;"""
+            cur = conn.cursor()
+            cur.execute(sql)
+            conn.commit()
+
+            result = [x for x in cur.fetchall()]
+            return result, cur.description
+
+
     @staticmethod
     def setName(itemID, name):
         conn = Item.create_connection()
@@ -148,7 +165,7 @@ class Item:
                                         itemName text NOT NULL,
                                         itemID integer PRIMARY KEY AUTOINCREMENT,
                                         price integer NOT NULL,
-                                        itemStatus text,
+                                        itemStatus integer,
                                         itemDescription text,
                                         buyerID integer,
                                         itemImage blob,
@@ -236,13 +253,24 @@ class Item:
         itemsIDs = []
         items = []
         itemsIDs = c.fetchall()
+        finalResult = []
 
-        for item in itemsIDs:
-            items.append(Item.getItem(item[0]))
+        conn = Item.create_connection()
+        with conn:
+            for i in itemsIDs:
+                c.execute("""SELECT items.itemname, items.itemID, items.price, items.itemStatus, items.itemDescription, items.buyerID, items.itemImage, user.userName,USER.score
+                        FROM items
+                        INNER JOIN USER
+                        ON items.id = user.userID
+                        WHERE items.id=?;""", (i[0], ))
 
-        return items
+                result = [x for x in c.fetchall()]
+                print(result)
+                finalResult.append(result)
+            return finalResult, c.description
 
 if __name__ == '__main__':
     memes = Item("Memes", 500, 0, "The end of the memes", None, 11111111)
     memes2 = Item("memes, the second coming", 450, 0, "The resurrection", None, 5161616)
     memes3 = Item("BATTLESTAR GALACTICA", 5000, 0, "Battlestar is pretty lit", None, 5161616)
+

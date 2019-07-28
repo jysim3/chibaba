@@ -22,6 +22,20 @@ def returnItem():
 
     return jsonify(items)
 
+@app.route("/selling")
+def sellingItems():
+    result, title = Item.getAllItemsOnSale()
+    items = []
+    for row in result:
+        item = dict()
+        #print(row)
+        for idx, column in enumerate(row):
+            item[title[idx][0]] = row[idx]
+
+        items.append(item)
+
+    return jsonify(items)
+
 @app.route("/purchaseItems", methods=['POST'])
 def purchaseItem():
     inputJSON = request.get_json()
@@ -132,7 +146,17 @@ def getSellingHistory():
 def search():
     inputJSON = request.get_json()
     textString = inputJSON['input']
-    searchResult = Item.searchString(textString)
+    result, title = Item.searchString(textString)
+    items = []
+    for row in result:
+        item = dict()
+        print(row)
+        for idx, column in enumerate(row):
+            item[title[idx][0]] = row[idx]
+
+        items.append(item)
+
+    return jsonify(items)
 
     return jsonify(searchResult)   
 
