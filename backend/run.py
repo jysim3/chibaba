@@ -25,16 +25,18 @@ def returnItem():
 @app.route("/purchaseItems", methods=['POST'])
 def purchaseItem():
     inputJSON = request.get_json()
-    itemID = inputJSON['itemID']
-    userID = inputJSON['userID']
+    print(inputJSON)
+    itemID = str(inputJSON['itemID'])
+    userID = str(inputJSON['userID'])
     print(itemID + userID)
     if (itemID is None or userID is None):
         return jsonify(status=404)
     
     #Set item to be sold and make it belong to the buyer
-    User.soldItem(itemID, userID)
-    
-    return jsonify(status=200)
+    if User.soldItem(itemID, userID):
+        return jsonify(status=200)
+    else: 
+        return jsonify(status=400)
 
 @app.route("/login", methods=['POST']) 
 def login():
@@ -42,8 +44,9 @@ def login():
     print("input == ", inputJSON)
     username = inputJSON['username']
     password = inputJSON['password']
-    if User.login(username,password):
-        return jsonify(status=200),200
+    userID = User.login(username,password)
+    if userID:
+        return jsonify(userID=userID,status=200),200
     else:
         return jsonify(status=401),401
 

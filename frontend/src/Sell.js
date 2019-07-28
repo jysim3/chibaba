@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Button, Upload, Form, Input, Icon, Select} from 'antd';
+import { InputNumber, Card, Button, Upload, Form, Input, Icon, Select} from 'antd';
 
 import cookie from 'react-cookies';
 const { Option } = Select;
@@ -8,15 +8,18 @@ const { TextArea } = Input;
 class Sell extends React.Component {
     state = {
         free: false,
-        submit: ''
+        submit: '',
+        uploading: false,
+        fileList: []
     }
-
     handleSubmit = e => {
       e.preventDefault();
       this.props.form.validateFields((err, values) => {
         if (!err) {
             let data = values;
             data['userID'] = cookie.load('userID');
+            data['files'] = this.state.fileList;
+
             fetch('http://localhost:5000/sellItem', {
                 method: 'POST',
                 body: JSON.stringify(values),
@@ -41,7 +44,7 @@ class Sell extends React.Component {
     };
   
     render() {
-        const { free } = this.state;
+        const { free, fileList } = this.state;
         const { submit } = this.state;
         console.log(free)
       const { getFieldDecorator } = this.props.form;
@@ -60,22 +63,23 @@ class Sell extends React.Component {
             )}
           </Form.Item>
           <Form.Item>
-            {getFieldDecorator('price', {
-              rules: [{ required: true, message: 'Please input your price!' }],
-            })(
-              <Input 
-                addonBefore={(
-                    <Select defaultValue="$">
+                <Input.Group compact>
+                    <Select defaultValue="$" >
                         <Option value="$">$</Option>
                         <Option value="free">free</Option>
                     </Select>
-                )}
+            {getFieldDecorator('price', {
+              rules: [{ required: true, message: 'Please input your price!' }],
+            })(
+                
+              <InputNumber
+                step={0.5}
                 disabled={free}
-                prefix={<Icon type="dollar" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Price"
               />
               ,
             )}
+            </Input.Group>
           </Form.Item>
           <Form.Item>
             {getFieldDecorator('description', {
@@ -88,16 +92,17 @@ class Sell extends React.Component {
             )}
           </Form.Item>
           <Form.Item label="Upload" extra="">
-          {getFieldDecorator('upload', {
-            valuePropName: 'fileList',
-            getValueFromEvent: this.normFile,
-          })(
-            <Upload name="logo" action="/upload.do" listType="picture">
+            <Upload name="logo" listType="picture" beforeUpload={file => {
+                    this.setState(state => ({
+                        fileList: [...state.fileList, file],
+                    }));                
+                    return false;
+                }} 
+            >
               <Button>
                 <Icon type="upload" /> Click to upload
               </Button>
-            </Upload>,
-          )}
+            </Upload>
         </Form.Item>
         <Form.Item wrapperCol={{ span: 12, offset: 6 }}>
         

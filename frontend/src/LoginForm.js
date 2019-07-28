@@ -22,7 +22,8 @@ class LoginForm extends React.Component {
             .then(response => response.json())
             .then(j => {
                 if (j.status === 200){
-                    cookie.save('userID', values['userID'], { path: '/' })
+                    
+                    cookie.save('userID', j['userID'], { path: '/' })
                     cookie.save('username', values['username'], { path: '/' })
                     onCancel();
                     

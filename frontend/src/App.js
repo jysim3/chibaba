@@ -13,6 +13,7 @@ import Register  from "./Register.js";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
+const { Search } = Input
 
 
 class Cart extends React.Component {
@@ -27,9 +28,10 @@ class App extends React.Component {
         login: false,
         activePage: "/"
     };
-  
     componentWillMount() {
         this.setState(  { username: cookie.load('username'), userID: cookie.load('userID') } );
+    
+        this.setState({ activePage: window.location.href })
     }
     
     MenuOnClick = ({item, keyPath}) => {
@@ -54,11 +56,13 @@ class App extends React.Component {
         })
     }
     
+    Logout = () => {
+        cookie.remove('userID', { path: '/' })
+        cookie.remove('username', { path: '/' })
+        this.setState({ activePage: '/' })
+        return (<Redirect to='/'></Redirect>)
+    }
     render() {
-        const Logout = () => {
-            cookie.remove('userID', { path: '/' })
-            return (<Redirect to='/'></Redirect>)
-        }
         const ItemMenu = (props) => {
             const {idx, icon, text} = props;
             
@@ -80,7 +84,7 @@ class App extends React.Component {
                 style={{ lineHeight: '64px' }}>
                 <ItemMenu idx="/store" key="/store" icon="shopping" text="Buy" />
                 <ItemMenu idx="/sell" key="/sell" icon="dollar" text="Sell / Donate" />
-                <ItemMenu idx="/cart" key="/cart" icon="shopping-cart" text="Cart" />
+                {/* <ItemMenu idx="/cart" key="/cart" icon="shopping-cart" text="Cart" /> */}
                 { this.state.userID ? 
             
                 <SubMenu key="profile"
@@ -108,7 +112,7 @@ class App extends React.Component {
         >
             <LoginForm onCancel={() => {
                 this.setState({login: false, username: cookie.load('username'), userID: cookie.load('userID') }) 
-
+                window.location.href = '/';
                 }}></LoginForm>
       </Modal>
             </Menu>
@@ -120,8 +124,13 @@ class App extends React.Component {
                 <Layout style={{ minHeight: '100vh' }}>
 
                     <Header  >
-                        <div className="logo" />
-                        <MainMenu />
+                    <Search
+                        placeholder="input search text"
+                        onSearch={(value) => {window.location.href = '/store?' + value}}
+                        style={{ width: 200 }}
+                        className="logo" 
+                    />                        
+                    <MainMenu />
                     </Header>
                     <Layout>
                         <Switch>
@@ -136,7 +145,7 @@ class App extends React.Component {
                             <Route path="/profile" component={Profile} />
                             <Route path="/history" component={PurchaseHistory} />
                             <Route path="/register" component={Register} />
-                            <Route path="/logout" component={Logout}/>
+                            <Route path="/logout" component={this.Logout}/>
                             {/* <Route path="/userItems" component={UserItems} /> */}
                         </Switch>
 
